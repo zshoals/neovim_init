@@ -8,6 +8,8 @@
 set runtimepath^=~/Desktop/Programs/nvim-win64/extension/ctrlp.vim
 set wildignore+=*.dll,*.lib,*.exe,*.pdb,*.obj,*.ilk
 
+set grepprg=rg\ -n\ --column\ --vimgrep\ --no-require-git
+
 nnoremap <Space> <Nop>
 let mapleader = " "
 
@@ -69,11 +71,12 @@ nnoremap <Leader>k mtO<Esc>`tzz
 nmap <Leader>g <Leader>j<Leader>k
 
 " Create matching brackets
-inoremap " ""<left>
-inoremap ' ''<left>
-inoremap ( ()<left>
-inoremap [ []<left>
-inoremap { {}<left>
+" These are kind of annoying in practice
+" inoremap \" \"\"<left>
+" inoremap ' ''<left>
+" inoremap ( ()<left>
+" inoremap [ []<left>
+" inoremap { {}<left>
 
 " Search for types and function call declarations
 " Note== this catches return func() too, this could be fixed
@@ -86,6 +89,8 @@ nnoremap <Leader>i :lvimgrepadd /\(typedef\\|\(\w\+\)\s\(\w\+\)\((.*\));\\|}\s\+
 
 " Open nvim configuration file
 nnoremap <Leader><Leader>i :vsplit ~/AppData/Local/nvim/init.vim<Enter>
+" Regenerate ctags
+nnoremap <Leader><Leader>t :! ctags_regenerate.bat<Enter>
 
 " Don't permit readonly buffers to be modified
 augroup NoModWhenReadOnly
@@ -93,3 +98,27 @@ augroup NoModWhenReadOnly
     autocmd BufRead * let &l:modifiable = !&readonly
 augroup END
 
+" Jump to a file whose extension corresponds to the extension of the current
+" file. The `tags' file, created with:
+" $ ctags --extra=+f -R .
+" has to be present in the current directory.
+function! JumpToCorrespondingFile()
+    let l:extensions = { 'c': 'h', 'h': 'c', 'cpp': 'hpp', 'hpp': 'cpp', 'cc': 'hh', 'hh': 'cc' }
+    let l:fe = expand('%:e')
+    if has_key(l:extensions, l:fe)
+        execute ':tag ' . expand('%:t:r') . '.' . l:extensions[l:fe]
+    else
+        call SwapExtPrintError(">>> Corresponding extension for '" . l:fe . "' is not specified") 
+    endif
+endfunct
+
+" jump to a file with the corresponding extension (<C-F2> aka <S-F14>)
+nnoremap <Leader>o :call JumpToCorrespondingFile()<CR>
+
+" Print error message.
+function! SwapExtPrintError(msg) abort
+    execute 'normal! \<Esc>'
+    echohl ErrorMsg
+    echomsg a:msg
+    echohl None
+endfunction
