@@ -8,7 +8,9 @@
 set runtimepath^=~/Desktop/Programs/nvim-win64/extension/ctrlp.vim
 set wildignore+=*.dll,*.lib,*.exe,*.pdb,*.obj,*.ilk
 
-set grepprg=rg\ -n\ --column\ --vimgrep\ --no-require-git
+set tag+=./ucrt_tags
+
+set grepprg=rg\ -S\ -n\ --column\ --vimgrep\ --no-require-git
 
 nnoremap <Space> <Nop>
 let mapleader = " "
@@ -24,7 +26,8 @@ set foldcolumn=0
 set foldnestmax=2
 " Automatically unfold all folds when entering a new buffer
 autocmd BufWinEnter * silent! :%foldopen!
-set shiftwidth=4
+set shiftwidth=0
+set tabstop=4
 set ignorecase
 set smartcase
 filetype plugin indent on
@@ -69,6 +72,10 @@ inoremap kj<Leader> <Escape>
 nnoremap <Leader>j mto<Esc>`t
 nnoremap <Leader>k mtO<Esc>`tzz
 nmap <Leader>g <Leader>j<Leader>k
+" Open and close the location list in various ways
+nnoremap <Leader>lo :above lopen<Enter>
+nmap <Leader>lvo :vert lopen<Enter><Leader>n<Leader>n
+nmap <Leader>lc :lclose<Enter><Leader>n<Leader>n
 
 " Create matching brackets
 " These are kind of annoying in practice
@@ -83,9 +90,11 @@ nmap <Leader>g <Leader>j<Leader>k
 " Very nasty but works for C99 at least
 nnoremap <Leader>u :lvimgrep /\(typedef\\|\(\w\+\)\s\(\w\+\)\((.*\));\\|}\s\+\w\+;\)/j %<Enter>
 nnoremap <Leader>i :lvimgrepadd /\(typedef\\|\(\w\+\)\s\(\w\+\)\((.*\));\\|}\s\+\w\+;\)/j %<Enter>
-
 " nnoremap <Leader>i :lvimgrepadd /\(typedef\\|\(\w\+\)\s\(\w\+\)\((.*\));\\|}.\+;\)/j %<Enter>
 " nnoremap <Leader>u :lvimgrep /\(SDLCALL\\|typedef\)/j %<Enter> :above lopen<Enter> <C-w>j
+
+" Prime a search for anything in files
+nnoremap <Leader>f :silent lgrep 
 
 " Open nvim configuration file
 nnoremap <Leader><Leader>i :vsplit ~/AppData/Local/nvim/init.vim<Enter>
