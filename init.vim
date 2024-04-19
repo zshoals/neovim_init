@@ -10,7 +10,14 @@ set wildignore+=*.dll,*.lib,*.exe,*.pdb,*.obj,*.ilk
 
 set tag+=./ucrt_tags
 
+" Prime the ripgrep function with:
+" 	smartcase, numbered lines, columns,
+" 	formatted for vim, and without requiring a git repository
 set grepprg=rg\ -S\ -n\ --column\ --vimgrep\ --no-require-git
+set grepformat=%f:%l:%c:%m
+
+" Execute a default build script
+set makeprg=build_debug.bat
 
 nnoremap <Space> <Nop>
 let mapleader = " "
@@ -55,9 +62,12 @@ nnoremap 0 _
 nnoremap _ 0
 " Clear search
 nnoremap <Leader><Enter> :noh<Enter>
-" Cycle through the location/quickfix list
+" Cycle through the location list
 nnoremap <Leader>[ :lprev<Enter>zz
 nnoremap <Leader>] :lnext<Enter>zz
+"Cycle through the quickfix list
+nnoremap <Leader>9 :cprev<Enter>zz
+nnoremap <Leader>0 :cnext<Enter>zz
 " Open a tag or file in a vertical split
 nnoremap <C-W><C-V>f :exec "vert norm <C-V><C-W>f"<CR>
 nnoremap <C-W><C-V>[ :exec "vert norm <C-V><C-W>["<CR>
@@ -76,6 +86,10 @@ nmap <Leader>g <Leader>j<Leader>k
 nnoremap <Leader>lo :above lopen<Enter>
 nmap <Leader>lvo :vert lopen<Enter><Leader>n<Leader>n
 nmap <Leader>lc :lclose<Enter><Leader>n<Leader>n
+" Open and close the quickfix list in various ways
+nnoremap <Leader>co :above copen<Enter>
+nmap <Leader>cvo :vert copen<Enter><Leader>n<Leader>n
+nmap <Leader>cc :cclose<Enter><Leader>n<Leader>n
 
 " Create matching brackets
 " These are kind of annoying in practice
@@ -100,6 +114,8 @@ nnoremap <Leader>f :silent lgrep
 nnoremap <Leader><Leader>i :vsplit ~/AppData/Local/nvim/init.vim<Enter>
 " Regenerate ctags
 nnoremap <Leader><Leader>t :! ctags_regenerate.bat<Enter>
+" Build Debug
+nnoremap <Leader><Leader>r :silent make<Enter>
 
 " Don't permit readonly buffers to be modified
 augroup NoModWhenReadOnly
