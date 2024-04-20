@@ -5,10 +5,13 @@
 "	ctrlp.vim
 "
 "ctrlp support
-set runtimepath^=~/Desktop/Programs/nvim-win64/extension/ctrlp.vim
+set runtimepath^=~/AppData/local/nvim/extension/ctrlp.vim
 set wildignore+=*.dll,*.lib,*.exe,*.pdb,*.obj,*.ilk
 
-set tag+=./ucrt_tags
+set tag+=./ucrt_tags;/
+
+" Actually search for include files within the working directory
+set path+=~/Desktop/SDL_Program/*
 
 " Prime the ripgrep function with:
 " 	smartcase, numbered lines, columns,
@@ -28,7 +31,9 @@ set cursorline
 set nowrap
 set switchbuf=useopen
 set splitright
-set foldmethod=syntax
+" Folding with syntax mode on makes editing large files (10k+ lines) VERY SLOW
+" 	So forget about it...we weren't really using it anyway.
+set foldmethod=manual
 set foldcolumn=0
 set foldnestmax=2
 " Automatically unfold all folds when entering a new buffer
@@ -40,11 +45,9 @@ set smartcase
 filetype plugin indent on
 
 " Autocompile on write
-" Don't use this thing, just make a real filewatcher :/
-" If you decide to use this thing again, replace QUOTEHERE with actual quotes
-" these were removed because they were messing up the commented out code
-"vsplit termoutput
-"autocmd BufWritePost *.c,*.h :execute <QUOTEHERE>normal :vert sb termoutput\<Enter>A\<Esc> :silent r! build_debug.bat\<Enter><QUOTEHERE>
+" NOTE--It may be better just to manually trigger this...how does it function
+" 	if we write to multiple buffers?
+" autocmd BufWritePost *.c,*.h :silent make
 
 
 " Dump header API to quicklist on buffer open
@@ -80,7 +83,7 @@ nnoremap <Leader>n :set ead=hor ea noea<Enter>
 inoremap kj<Leader> <Escape>
 " Create gaps above or below the current line
 nnoremap <Leader>j mto<Esc>`t
-nnoremap <Leader>k mtO<Esc>`tzz
+nnoremap <Leader>k mtO<Esc>`t
 nmap <Leader>g <Leader>j<Leader>k
 " Open and close the location list in various ways
 nnoremap <Leader>lo :above lopen<Enter>
