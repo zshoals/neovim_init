@@ -68,8 +68,8 @@ nnoremap _ 0
 nnoremap <Leader><Enter> :noh<Enter>
 " Search for Numbers, Curly brackets, and any brackets
 nnoremap <Leader>w /\d\+/<Enter>
-nnoremap <Leader>r /\({\\|}\)/<Enter>
-nnoremap <Leader>s /\({\\|}\\|(\\|)\\|\[\\|\]\\|'\\|"\\|<\\|>\)/<Enter>
+nnoremap <Leader>r /[{}]/<Enter>
+nnoremap <Leader>s /["'{}()<>]/<Enter>
 " Cycle through the location list
 nnoremap <Leader>[ :lprev<Enter>zz
 nnoremap <Leader>] :lnext<Enter>zz
