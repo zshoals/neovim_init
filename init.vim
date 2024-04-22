@@ -26,6 +26,7 @@ nnoremap <Space> <Nop>
 let mapleader = " "
 
 " Primary colorscheme: fogbell/fogbell_lite/fogbell_light
+set guifont=Iosevka\ SS06:h12
 colorscheme fogbell_lite
 set cursorline
 set nowrap
@@ -60,11 +61,15 @@ filetype plugin indent on
 " Disable indenting inside extern C blocks
 set cinoptions=E-s
 
-" Swap beginning of line jump
+" Swap beginning of line jump (my preference)
 nnoremap 0 _
 nnoremap _ 0
 " Clear search
 nnoremap <Leader><Enter> :noh<Enter>
+" Search for Numbers, Curly brackets, and any brackets
+nnoremap <Leader>w /\d\+/<Enter>
+nnoremap <Leader>r /\({\\|}\)/<Enter>
+nnoremap <Leader>s /\({\\|}\\|(\\|)\\|\[\\|\]\\|'\\|"\\|<\\|>\)/<Enter>
 " Cycle through the location list
 nnoremap <Leader>[ :lprev<Enter>zz
 nnoremap <Leader>] :lnext<Enter>zz
@@ -81,16 +86,17 @@ nnoremap <Leader>m <C-w><Bar>
 nnoremap <Leader>n :set ead=hor ea noea<Enter>
 " Exit insert mode
 inoremap kj<Leader> <Escape>
+inoremap KJ<Leader> <Escape>
 " Create gaps above or below the current line
 nnoremap <Leader>j mto<Esc>`t
 nnoremap <Leader>k mtO<Esc>`t
 nmap <Leader>g <Leader>j<Leader>k
 " Open and close the location list in various ways
-nnoremap <Leader>lo :above lopen<Enter>
+nnoremap <Leader>lo :top lopen<Enter>
 nmap <Leader>lvo :vert lopen<Enter><Leader>n<Leader>n
 nmap <Leader>lc :lclose<Enter><Leader>n<Leader>n
 " Open and close the quickfix list in various ways
-nnoremap <Leader>co :above copen<Enter>
+nnoremap <Leader>co :top copen<Enter>
 nmap <Leader>cvo :vert copen<Enter><Leader>n<Leader>n
 nmap <Leader>cc :cclose<Enter><Leader>n<Leader>n
 
@@ -102,7 +108,7 @@ nmap <Leader>cc :cclose<Enter><Leader>n<Leader>n
 " inoremap [ []<left>
 " inoremap { {}<left>
 
-" Search for types and function call declarations
+" Search for types and function call declarations (C99)
 " Note== this catches return func() too, this could be fixed
 " Very nasty but works for C99 at least
 nnoremap <Leader>u :lvimgrep /\(typedef\\|\(\w\+\)\s\(\w\+\)\((.*\));\\|}\s\+\w\+;\)/j %<Enter>
@@ -150,3 +156,13 @@ function! SwapExtPrintError(msg) abort
     echomsg a:msg
     echohl None
 endfunction
+
+" Neovide configuration if it's active
+if exists("g:neovide")
+	let g:neovide_cursor_vfx_mode = ""
+	let g:neovide_cursor_trail_size = 0.0
+	let g:neovide_cursor_animation_length = 0.0
+	let g:neovide_scroll_animation_length = 0.0
+
+	let g:neovide_hide_mouse_when_typing = v:true
+endif
