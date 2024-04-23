@@ -60,6 +60,8 @@ filetype plugin indent on
 
 " Disable indenting inside extern C blocks
 set cinoptions=E-s
+" Disable curly bracket errors for compound literals
+let c_no_curly_error = 1
 
 " Swap beginning of line jump (my preference)
 nnoremap 0 _
@@ -124,7 +126,11 @@ nnoremap <Leader><Leader>i :vsplit ~/AppData/Local/nvim/init.vim<Enter>
 " Regenerate ctags
 nnoremap <Leader><Leader>t :! ctags_regenerate.bat<Enter>
 " Build Debug
-nnoremap <Leader><Leader>r :silent make<Enter>
+nnoremap <Leader><Leader>r :wa<Enter>:silent make<Enter>
+" Execute raddebugger
+nnoremap <Leader><Leader>d :call jobstart('raddbg --auto_run')<Enter>
+" Build and debug
+nnoremap <Leader><Leader>e :wa<Enter>:silent make<Enter>:call jobstart('raddbg --auto_run')<Enter>
 
 " Don't permit readonly buffers to be modified
 augroup NoModWhenReadOnly
