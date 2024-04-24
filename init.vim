@@ -124,6 +124,8 @@ nnoremap <Leader>f :silent lgrep
 
 " Open nvim configuration file
 nnoremap <Leader><Leader>i :vsplit ~/AppData/Local/nvim/init.vim<Enter>
+" Reload nvim configuration file
+nnoremap <Leader><Leader>l :source $MYVIMRC<Enter>
 " Regenerate ctags
 nnoremap <Leader><Leader>t :! ctags_regenerate.bat<Enter>
 " Build Debug
@@ -131,7 +133,6 @@ nnoremap <Leader><Leader>r :wa<Enter>:silent make<Enter>
 " Execute raddebugger
 nnoremap <Leader><Leader>d :call jobstart('raddbg --auto_run')<Enter>
 " Build and debug
-" nnoremap <Leader><Leader>e :wa<Enter>:silent make<Enter>:call jobstart('raddbg --auto_run')<Enter>
 nnoremap <Leader><Leader>e :wa<Enter>:call TryCompileAndDebug()<Enter>
 
 " Don't permit readonly buffers to be modified
@@ -179,6 +180,9 @@ function! TryCompileAndDebug()
 	silent make
 	if (QfError() == 0)
 		call jobstart('raddbg --auto_run')
+	else
+		vert copen
+		set ead=hor ea noea
 	endif
 endfunction
 
