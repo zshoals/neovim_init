@@ -11,7 +11,8 @@ set wildignore+=*.dll,*.lib,*.exe,*.pdb,*.obj,*.ilk
 set tag+=./ucrt_tags;/
 
 " Actually search for include files within the working directory
-set path+=~/Desktop/SDL_Program/*
+" set path+=~/Desktop/SDL_Program/*
+set path+=C:/Work/interdiction/*
 
 " Prime the ripgrep function with:
 " 	smartcase, numbered lines, columns,
@@ -130,7 +131,8 @@ nnoremap <Leader><Leader>r :wa<Enter>:silent make<Enter>
 " Execute raddebugger
 nnoremap <Leader><Leader>d :call jobstart('raddbg --auto_run')<Enter>
 " Build and debug
-nnoremap <Leader><Leader>e :wa<Enter>:silent make<Enter>:call jobstart('raddbg --auto_run')<Enter>
+" nnoremap <Leader><Leader>e :wa<Enter>:silent make<Enter>:call jobstart('raddbg --auto_run')<Enter>
+nnoremap <Leader><Leader>e :wa<Enter>:call TryCompileAndDebug()<Enter>
 
 " Don't permit readonly buffers to be modified
 augroup NoModWhenReadOnly
@@ -172,3 +174,24 @@ if exists("g:neovide")
 
 	let g:neovide_hide_mouse_when_typing = v:true
 endif
+
+function! TryCompileAndDebug()
+	silent make
+	if (QfError() == 0)
+		call jobstart('raddbg --auto_run')
+	endif
+endfunction
+
+function! QfError() abort
+	let qf = getqflist()
+	let retval = 0
+
+	for l in qf
+		if l.text =~# 'error'
+			let retval = 1
+			break
+		endif
+	endfor
+
+	return retval
+endfunction
