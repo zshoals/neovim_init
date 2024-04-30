@@ -5,6 +5,9 @@
 "	ctrlp.vim
 "
 "ctrlp support
+
+cd C:/Work/interdiction
+
 set runtimepath^=~/AppData/local/nvim/extension/ctrlp.vim
 set wildignore+=*.dll,*.lib,*.exe,*.pdb,*.obj,*.ilk
 
@@ -13,6 +16,8 @@ set tag+=./ucrt_tags;/
 " Actually search for include files within the working directory
 " set path+=~/Desktop/SDL_Program/*
 set path+=C:/Work/interdiction/*
+set path+=C:/Program\\\ Files\\\ (x86)/Windows\\\ Kits/10/Include/10.0.22000.0/ucrt/
+set path+=C:/Program\\\ Files/Microsoft\\\ Visual\\\ Studio/2022/Community/VC/Tools/MSVC/14.35.32215/include/
 
 " Prime the ripgrep function with:
 " 	smartcase, numbered lines, columns,
@@ -27,7 +32,8 @@ nnoremap <Space> <Nop>
 let mapleader = " "
 
 " Primary colorscheme: fogbell/fogbell_lite/fogbell_light
-set guifont=Iosevka\ SS06:h12
+" set guifont=Iosevka\ SS06:h12
+set guifont=Terminus\ (TTF)\ for\ Windows:h9
 colorscheme fogbell_lite
 set cursorline
 set nowrap
@@ -102,6 +108,10 @@ nmap <Leader>lc :lclose<Enter><Leader>n<Leader>n
 nnoremap <Leader>co :top copen<Enter>
 nmap <Leader>cvo :vert copen<Enter><Leader>n<Leader>n
 nmap <Leader>cc :cclose<Enter><Leader>n<Leader>n
+" Note and Todo shortcuts
+nnoremap <Leader><Leader>c :let @t=strftime('%m-%d-%Y ')<Enter>i//NOTE(zshoals <Esc>"tpi):><Right><Esc>
+nnoremap <Leader><Leader>z :let @t=strftime('%m-%d-%Y ')<Enter>i//TODO(zshoals <Esc>"tpi):><Right><Esc>
+nnoremap <Leader><Leader>x :let @t=strftime('%m-%d-%Y ')<Enter>i//PERFORMANCE(zshoals <Esc>"tpi):><Right><Esc>
 
 " Create matching brackets
 " These are kind of annoying in practice
@@ -114,8 +124,8 @@ nmap <Leader>cc :cclose<Enter><Leader>n<Leader>n
 " Search for types and function call declarations (C99)
 " Note== this catches return func() too, this could be fixed
 " Very nasty but works for C99 at least
-nnoremap <Leader>u :lvimgrep /\(typedef\\|\(\w\+\)\s\(\w\+\)\((.*\));\\|}\s\+\w\+;\)/j %<Enter>
-nnoremap <Leader>i :lvimgrepadd /\(typedef\\|\(\w\+\)\s\(\w\+\)\((.*\));\\|}\s\+\w\+;\)/j %<Enter>
+nnoremap <Leader>u :lvimgrep /\(typedef\\|\(\w*\)\s\(\w\+\)\((.*\))\\|}\s\+\w\+;\)/j %<Enter>
+nnoremap <Leader>i :lvimgrepadd /\(typedef\\|\(\w*\)\s\(\w\+\)\((.*\))\\|}\s\+\w\+;\)/j %<Enter>
 " nnoremap <Leader>i :lvimgrepadd /\(typedef\\|\(\w\+\)\s\(\w\+\)\((.*\));\\|}.\+;\)/j %<Enter>
 " nnoremap <Leader>u :lvimgrep /\(SDLCALL\\|typedef\)/j %<Enter> :above lopen<Enter> <C-w>j
 
@@ -187,15 +197,15 @@ function! TryCompileAndDebug()
 endfunction
 
 function! QfError() abort
-	let qf = getqflist()
-	let retval = 0
+	let l:qf = getqflist()
+	let l:retval = 0
 
-	for l in qf
-		if l.text =~# 'error'
-			let retval = 1
+	for l:l in l:qf
+		if l:l.text =~# 'error'
+			let l:retval = 1
 			break
 		endif
 	endfor
 
-	return retval
+	return l:retval
 endfunction
