@@ -15,7 +15,7 @@ set tag+=./ucrt_tags;/
 
 " Actually search for include files within the working directory
 " set path+=~/Desktop/SDL_Program/*
-set path+=C:/Work/interdiction/*
+set path+=C:/Work/interdiction/**
 set path+=C:/Program\\\ Files\\\ (x86)/Windows\\\ Kits/10/Include/10.0.22000.0/ucrt/
 set path+=C:/Program\\\ Files/Microsoft\\\ Visual\\\ Studio/2022/Community/VC/Tools/MSVC/14.35.32215/include/
 
@@ -28,13 +28,29 @@ set grepformat=%f:%l:%c:%m
 " Execute a default build script
 set makeprg=build_debug.bat
 
+" Configure netrw file explorer
+let g:netrw_liststyle=3
+
 nnoremap <Space> <Nop>
 let mapleader = " "
 
+
 " Primary colorscheme: fogbell/fogbell_lite/fogbell_light
+colorscheme fogbell_lite
+" NOTE--In order for guicursor highlighting to work in nvimqt in Windows
+" 	:hi Cursor guifg=... and guibg...,
+" 	a damned REGISTRY ENTRY for ext_linegrid needs to be set to true
+" 	for nvimqt, in Software\nvim-qt\nvim-qt or something like that
+" 	IT ISN'T SET ON BY DEFAULT!!!
+" 	Check for ext_tabline, that's the same key where this entry needs to be
+" 	:hi Cursor needs to be set, and
+" 	the cursor itself needs to be informed to use the correct highlight group
+" 	Cursor/Cursor
+set guicursor=n-v-c-sm:block-Cursor/Cursor,i-ci-ve:ver25-Cursor/Cursor,r-cr-o:hor20-Cursor/Cursor
+"  hi Cursor guifg=White guibg=#f03535 // Duller red
+hi Cursor guifg=White guibg=Red
 " set guifont=Iosevka\ SS06:h12
 set guifont=Terminus\ (TTF)\ for\ Windows:h9
-colorscheme fogbell_lite
 set cursorline
 set nowrap
 set switchbuf=useopen
@@ -92,7 +108,7 @@ nnoremap <C-W><C-V>[ :exec "vert norm <C-V><C-W>["<CR>
 nnoremap <Leader>m <C-w><Bar>
 " Equalize buffers
 " nnoremap <Leader>n <C-w>=  -----Equalizes horizontally and vertically
-nnoremap <Leader>n :set ead=hor ea noea<Enter>
+nnoremap <Leader>n :set ead=hor ea noea<Enter>:echo<Enter>
 " Exit insert mode
 inoremap kj<Leader> <Escape>
 inoremap KJ<Leader> <Escape>
@@ -109,9 +125,9 @@ nnoremap <Leader>co :top copen<Enter>
 nmap <Leader>cvo :vert copen<Enter><Leader>n<Leader>n
 nmap <Leader>cc :cclose<Enter><Leader>n<Leader>n
 " Note and Todo shortcuts
-nnoremap <Leader><Leader>c :let @t=strftime('%m-%d-%Y ')<Enter>i//NOTE(zshoals <Esc>"tpi):><Right><Esc>
-nnoremap <Leader><Leader>z :let @t=strftime('%m-%d-%Y ')<Enter>i//TODO(zshoals <Esc>"tpi):><Right><Esc>
-nnoremap <Leader><Leader>x :let @t=strftime('%m-%d-%Y ')<Enter>i//PERFORMANCE(zshoals <Esc>"tpi):><Right><Esc>
+nnoremap <Leader><Leader>c :let @t=strftime('%m-%d-%Y ')<Enter>i//NOTE(zpc <Esc>"tpi):><Right><Esc>
+nnoremap <Leader><Leader>z :let @t=strftime('%m-%d-%Y ')<Enter>i//TODO(zpc <Esc>"tpi):><Right><Esc>
+nnoremap <Leader><Leader>x :let @t=strftime('%m-%d-%Y ')<Enter>i//PERFORMANCE(zpc <Esc>"tpi):><Right><Esc>
 
 " Create matching brackets
 " These are kind of annoying in practice
@@ -124,8 +140,8 @@ nnoremap <Leader><Leader>x :let @t=strftime('%m-%d-%Y ')<Enter>i//PERFORMANCE(zs
 " Search for types and function call declarations (C99)
 " Note== this catches return func() too, this could be fixed
 " Very nasty but works for C99 at least
-nnoremap <Leader>u :lvimgrep /\(typedef\\|\(\w*\)\s\(\w\+\)\((.*\))\\|}\s\+\w\+;\)/j %<Enter>
-nnoremap <Leader>i :lvimgrepadd /\(typedef\\|\(\w*\)\s\(\w\+\)\((.*\))\\|}\s\+\w\+;\)/j %<Enter>
+nnoremap <Leader>u :lvimgrep /\(typedef\\|\(\w\+\\|\*\)\s\(\w\+\)\((.*\))\\|}\s\+\w\+;\)/j %<Enter>
+nnoremap <Leader>i :lvimgrepadd /\(typedef\\|\(\w\+\\|\*\)\s\(\w\+\)\((.*\))\\|}\s\+\w\+;\)/j %<Enter>
 " nnoremap <Leader>i :lvimgrepadd /\(typedef\\|\(\w\+\)\s\(\w\+\)\((.*\));\\|}.\+;\)/j %<Enter>
 " nnoremap <Leader>u :lvimgrep /\(SDLCALL\\|typedef\)/j %<Enter> :above lopen<Enter> <C-w>j
 
