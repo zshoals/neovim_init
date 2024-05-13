@@ -142,12 +142,8 @@ nnoremap <Leader><Leader>x :let @t=strftime('%m-%d-%Y ')<Enter>i//PERFORMANCE(zp
 " Very nasty but works for C99 at least
 " nnoremap <Leader>u :lvimgrep /\(typedef\\|\(\w\+\\|\*\)\s\(\w\+\)\((.*\))\\|}\s\+\w\+;\)/j %<Enter>
 " nnoremap <Leader>i :lvimgrepadd /\(typedef\\|\(\w\+\\|\*\)\s\(\w\+\)\((.*\))\\|}\s\+\w\+;\)/j %<Enter>
-nnoremap <Leader>u :lvimgrep /\v(typedef\|\w+\s+\w+\(.+\)\;\|\w+\*+\w+\(.+\)\;\|}\s+\w+;\|\w+\*=\w+\(.+\)\s*\{\|^%(.*else if)@!.*\zs\w+\s+\w+\(.+\)\s*\n+\s*\{)/j %<Enter>
-nnoremap <Leader>u :lvimgrepadd /\v(typedef\|\w+\s+\w+\(.+\)\;\|\w+\*+\w+\(.+\)\;\|}\s+\w+;\|\w+\*=\w+\(.+\)\s*\{\|^%(.*else if)@!.*\zs\w+\s+\w+\(.+\)\s*\n+\s*\{)/j %<Enter>
-" typedef | \w+\s+\w+\(.+\)\; | \w+\*=\w+\(.+\)\; | \w+\*=\w+\(.+\)\s+{ | \w+\*=\w+\(.+\)\s*\n\s*\{
-
-" nnoremap <Leader>i :lvimgrepadd /\(typedef\\|\(\w\+\)\s\(\w\+\)\((.*\));\\|}.\+;\)/j %<Enter>
-" nnoremap <Leader>u :lvimgrep /\(SDLCALL\\|typedef\)/j %<Enter> :above lopen<Enter> <C-w>j
+nnoremap <Leader>u :lvimgrep /\v(typedef\|\w+\s+\w+\(.+\)\;\|\w+\*+\w+\(.+\)\;\|}\s+\w+;\|^%((.*if)\|(.*else\s*if))@!.*\zs\w+\*=\w+\(.+\)\s*\{\|^%(.*else\s*if)@!.*\zs\w+\s+\w+\(.+\)\s*\n+\s*\{)/j %<Enter>
+nnoremap <Leader>u :lvimgrepadd /\v(typedef\|\w+\s+\w+\(.+\)\;\|\w+\*+\w+\(.+\)\;\|}\s+\w+;\|^%((.*if)\|(.*else\s*if))@!.*\zs\w+\*=\w+\(.+\)\s*\{\|^%(.*else\s*if)@!.*\zs\w+\s+\w+\(.+\)\s*\n+\s*\{)/j %<Enter>
 
 " Prime a search for anything in files
 nnoremap <Leader>f :silent lgrep 
