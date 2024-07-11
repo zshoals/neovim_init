@@ -52,6 +52,7 @@ let s:voidRed = {'gui': '#821A1A', 'cterm256': '1'}
 let s:voidRed2 = {'gui': '#FF0000', 'cterm256': '196'}
 let s:none = {'gui': 'NONE', 'cterm256': 'NONE'}
 
+let s:voidOrange = {'gui': '#D6834D', 'cterm256': '252'}
 let s:voidYellow = {'gui': '#FFFF00', 'cterm256': '252'}
 let s:voidGreen = {'gui': '#5a8b5a', 'cterm256': '252'}
 
@@ -123,6 +124,7 @@ call <sid>hi('WarningMsg', s:voidSteel, s:voidRed, 'none')
 
 " General Additions (zshoals)
 call <sid>hi('Comment', s:voidYellow, s:none, 'none')
+call <sid>hi('Number', s:voidOrange, s:none, 'none')
 
 " Diff Mode
 if &diff

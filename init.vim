@@ -37,6 +37,7 @@ let mapleader = " "
 
 " Primary colorscheme: fogbell/fogbell_lite/fogbell_light
 colorscheme fogbell_lite
+set guifont=Terminus\ (TTF)\ for\ Windows:h9
 " NOTE--In order for guicursor highlighting to work in nvimqt in Windows
 " 	:hi Cursor guifg=... and guibg...,
 " 	a damned REGISTRY ENTRY for ext_linegrid needs to be set to true
@@ -50,7 +51,6 @@ set guicursor=n-v-c-sm:block-Cursor/Cursor,i-ci-ve:ver25-Cursor/Cursor,r-cr-o:ho
 "  hi Cursor guifg=White guibg=#f03535 // Duller red
 hi Cursor guifg=White guibg=Red
 " set guifont=Iosevka\ SS06:h12
-set guifont=Terminus\ (TTF)\ for\ Windows:h9
 set cursorline
 set nowrap
 set switchbuf=useopen
@@ -90,7 +90,7 @@ let c_no_curly_error = 1
 nnoremap 0 _
 nnoremap _ 0
 " Clear search
-nnoremap <Leader><Enter> :noh<Enter>
+nnoremap <Leader><Enter> :noh<Enter>:<Backspace><Esc>
 " Search for Numbers, Curly brackets, and any brackets
 nnoremap <Leader>w /\d\+/<Enter>
 nnoremap <Leader>r /[{}]/<Enter>
@@ -128,6 +128,10 @@ nmap <Leader>cc :cclose<Enter><Leader>n<Leader>n
 nnoremap <Leader><Leader>c :let @t=strftime('%m-%d-%Y ')<Enter>i//NOTE(zpc <Esc>"tpi):><Right><Esc>
 nnoremap <Leader><Leader>z :let @t=strftime('%m-%d-%Y ')<Enter>i//TODO(zpc <Esc>"tpi):><Right><Esc>
 nnoremap <Leader><Leader>x :let @t=strftime('%m-%d-%Y ')<Enter>i//PERFORMANCE(zpc <Esc>"tpi):><Right><Esc>
+" Center on jumping through files
+nmap <C-i> <C-i>zz
+nmap <C-o> <C-o>zz
+nmap <C-]> <C-]>zz
 
 " Create matching brackets
 " These are kind of annoying in practice
@@ -142,8 +146,8 @@ nnoremap <Leader><Leader>x :let @t=strftime('%m-%d-%Y ')<Enter>i//PERFORMANCE(zp
 " Very nasty but works for C99 at least
 " nnoremap <Leader>u :lvimgrep /\(typedef\\|\(\w\+\\|\*\)\s\(\w\+\)\((.*\))\\|}\s\+\w\+;\)/j %<Enter>
 " nnoremap <Leader>i :lvimgrepadd /\(typedef\\|\(\w\+\\|\*\)\s\(\w\+\)\((.*\))\\|}\s\+\w\+;\)/j %<Enter>
-nnoremap <Leader>u :lvimgrep /\v(typedef\|^%(.*return)@!.*\zs\w+\s+\w+\(.+\)\;\|\w+\*+\w+\(.+\)\;\|}\s+\w+;\|^%((.*if)\|(.*else\s*if))@!.*\zs\w+\*=\w+\(.+\)\s*\{\|^%(.*else\s*if)@!.*\zs\w+\s+\w+\(.+\)\s*\n+\s*\{)/j %<Enter>
-nnoremap <Leader>u :lvimgrepadd /\v(typedef\|\w+\s+\w+\(.+\)\;\|\w+\*+\w+\(.+\)\;\|}\s+\w+;\|^%((.*if)\|(.*else\s*if))@!.*\zs\w+\*=\w+\(.+\)\s*\{\|^%(.*else\s*if)@!.*\zs\w+\s+\w+\(.+\)\s*\n+\s*\{)/j %<Enter>
+nnoremap <Leader>u :silent lvimgrep /\v(typedef\|^%(.*return)@!.*\zs\w+\s+\w+\(.+\)\;\|\w+\*+\w+\(.+\)\;\|}\s+\w+;\|^%((.*if)\|(.*else\s*if))@!.*\zs\w+\*=\w+\(.+\)\s*\{\|^%(.*else\s*if)@!.*\zs\w+\s+\w+\(.+\)\s*\n+\s*\{)/j %<Enter><Enter>
+" nnoremap <Leader>u :silent lvimgrepadd /\v(typedef\|^%(.*return)@!.*\zs\w+\s+\w+\(.+\)\;\|\w+\*+\w+\(.+\)\;\|}\s+\w+;\|^%((.*if)\|(.*else\s*if))@!.*\zs\w+\*=\w+\(.+\)\s*\{\|^%(.*else\s*if)@!.*\zs\w+\s+\w+\(.+\)\s*\n+\s*\{)/j %<Enter>
 
 " Prime a search for anything in files
 nnoremap <Leader>f :silent lgrep 
@@ -155,11 +159,17 @@ nnoremap <Leader><Leader>l :source $MYVIMRC<Enter>
 " Regenerate ctags
 nnoremap <Leader><Leader>t :! ctags_regenerate.bat<Enter>
 " Build Debug
-nnoremap <Leader><Leader>r :wa<Enter>:silent make<Enter>
+" Note-- Apparently pointless :BackspaceEnter is to workaround a bug
+" 	regarding the cursor color resetting to a default value
+" 	which is corrected on re-entering command mode
+nnoremap <Leader><Leader>r :wa<Enter>:silent make<Enter>:<Esc>:<Backspace><Esc>
 " Execute raddebugger
 nnoremap <Leader><Leader>d :call jobstart('raddbg --auto_run')<Enter>
 " Build and debug
-nnoremap <Leader><Leader>e :wa<Enter>:call TryCompileAndDebug()<Enter>
+" Note-- Apparently pointless :BackspaceEnter is to workaround a bug
+" 	regarding the cursor color resetting to a default value
+" 	which is corrected on re-entering command mode
+nnoremap <Leader><Leader>e :wa<Enter>:call TryCompileAndDebug()<Enter>:<Backspace><Esc>
 
 " Don't permit readonly buffers to be modified
 augroup NoModWhenReadOnly
