@@ -125,6 +125,7 @@ call <sid>hi('WarningMsg', s:voidSteel, s:voidRed, 'none')
 " General Additions (zshoals)
 call <sid>hi('Comment', s:voidYellow, s:none, 'none')
 call <sid>hi('Number', s:voidOrange, s:none, 'none')
+call <sid>hi('Float', s:voidOrange, s:none, 'none')
 
 " Diff Mode
 if &diff

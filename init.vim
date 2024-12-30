@@ -6,10 +6,10 @@
 "
 "ctrlp support
 
-cd C:/Work/interdiction
+cd C:/Work
 
 set runtimepath^=~/AppData/local/nvim/extension/ctrlp.vim
-set wildignore+=*.dll,*.lib,*.exe,*.pdb,*.obj,*.ilk
+set wildignore+=*.dll,*.lib,*.exe,*.pdb,*.obj,*.ilk,*.rdi,*.exp,*/game_ideas/*
 
 set tag+=./ucrt_tags;/
 
@@ -26,7 +26,7 @@ set grepprg=rg\ -S\ -n\ --column\ --vimgrep\ --no-require-git
 set grepformat=%f:%l:%c:%m
 
 " Execute a default build script
-set makeprg=build_debug.bat
+set makeprg=build.bat
 
 " Configure netrw file explorer
 let g:netrw_liststyle=3
@@ -37,7 +37,9 @@ let mapleader = " "
 
 " Primary colorscheme: fogbell/fogbell_lite/fogbell_light
 colorscheme fogbell_lite
-set guifont=Terminus\ (TTF)\ for\ Windows:h9
+" set guifont=Terminus\ (TTF)\ for\ Windows:h9
+set guifont=Iosevka\ SS06:h12
+
 " NOTE--In order for guicursor highlighting to work in nvimqt in Windows
 " 	:hi Cursor guifg=... and guibg...,
 " 	a damned REGISTRY ENTRY for ext_linegrid needs to be set to true
@@ -68,24 +70,13 @@ set ignorecase
 set smartcase
 filetype plugin indent on
 
-" Autocompile on write
-" NOTE--It may be better just to manually trigger this...how does it function
-" 	if we write to multiple buffers?
-" autocmd BufWritePost *.c,*.h :silent make
-
-
-" Dump header API to quicklist on buffer open
-" Maybe this should just be done manually too :/
-" augroup WriteAPIOnHeaderEnter
-"     autocmd!
-"     autocmd BufEnter *.h keepjumps lvimgrep /\(SDLCALL\|typedef\)/j%
-" augroup END
-
 " Disable indenting inside extern C blocks
 set cinoptions=E-s
 " Disable curly bracket errors for compound literals
 let c_no_curly_error = 1
 
+" Paste from clipboard
+nnoremap <Leader><Leader><Leader>p "+P
 " Swap beginning of line jump (my preference)
 nnoremap 0 _
 nnoremap _ 0
@@ -125,21 +116,17 @@ nnoremap <Leader>co :top copen<Enter>
 nmap <Leader>cvo :vert copen<Enter><Leader>n<Leader>n
 nmap <Leader>cc :cclose<Enter><Leader>n<Leader>n
 " Note and Todo shortcuts
-nnoremap <Leader><Leader>c :let @t=strftime('%m-%d-%Y ')<Enter>i//NOTE(zpc <Esc>"tpi):><Right><Esc>
-nnoremap <Leader><Leader>z :let @t=strftime('%m-%d-%Y ')<Enter>i//TODO(zpc <Esc>"tpi):><Right><Esc>
-nnoremap <Leader><Leader>x :let @t=strftime('%m-%d-%Y ')<Enter>i//PERFORMANCE(zpc <Esc>"tpi):><Right><Esc>
+nnoremap <Leader><Leader>c :let @t=strftime('%m-%d-%Y ')<Enter>i//NOTE(zpc <Esc>"tpi):><Right><Esc>a
+nnoremap <Leader><Leader>z :let @t=strftime('%m-%d-%Y ')<Enter>i//TODO(zpc <Esc>"tpi):><Right><Esc>a
+nnoremap <Leader><Leader>x :let @t=strftime('%m-%d-%Y ')<Enter>i//PERFORMANCE(zpc <Esc>"tpi):><Right><Esc>a
 " Center on jumping through files
 nmap <C-i> <C-i>zz
 nmap <C-o> <C-o>zz
 nmap <C-]> <C-]>zz
 
-" Create matching brackets
-" These are kind of annoying in practice
-" inoremap \" \"\"<left>
-" inoremap ' ''<left>
-" inoremap ( ()<left>
-" inoremap [ []<left>
-" inoremap { {}<left>
+" Experiment with centering on Next/Previous
+nmap n nzz
+nmap N Nzz
 
 " Search for types and function call declarations (C99)
 " Note== this catches return func() too, this could be fixed
@@ -215,6 +202,8 @@ endif
 function! TryCompileAndDebug()
 	silent make
 	if (QfError() == 0)
+		cclose
+		set ead=hor ea noea
 		call jobstart('raddbg --auto_run')
 	else
 		vert copen
@@ -235,3 +224,5 @@ function! QfError() abort
 
 	return l:retval
 endfunction
+
+lua vim.keymap.set( 'c', '<CR>', function() return vim.fn.getcmdtype() == '/' and '<CR>zzzv' or '<CR>' end, { expr = true } )
