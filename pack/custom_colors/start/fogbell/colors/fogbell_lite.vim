@@ -85,6 +85,7 @@ call <sid>hi('Visual', s:none, s:voidGray2, 'none')
 
 call <sid>hi('CursorLine', s:none, s:voidBlack2, 'none')
 call <sid>hi('CursorColumn', s:none, s:voidBlack2, 'none')
+call <sid>hi('WinSeparator', s:voidBlack2, s:voidBlack, 'none')
 
 " General
 call <sid>hi('Boolean', s:voidSteel, s:none, 'none')

@@ -9,7 +9,7 @@
 cd C:/Work
 
 set runtimepath^=~/AppData/local/nvim/extension/ctrlp.vim
-set wildignore+=*.dll,*.lib,*.exe,*.pdb,*.obj,*.ilk,*.rdi,*.exp,*/game_ideas/*
+set wildignore+=*.dll,*.lib,*.exe,*.pdb,*.obj,*.ilk,*.rdi,*.exp,*/game_ideas/*,*/lib/kinc/Kinc/Backends/*
 
 set tag+=./ucrt_tags;/
 
@@ -49,19 +49,25 @@ set guifont=Iosevka\ SS06:h12
 " 	:hi Cursor needs to be set, and
 " 	the cursor itself needs to be informed to use the correct highlight group
 " 	Cursor/Cursor
+"
+"   https://github.com/equalsraf/neovim-qt/issues/1069
 set guicursor=n-v-c-sm:block-Cursor/Cursor,i-ci-ve:ver25-Cursor/Cursor,r-cr-o:hor20-Cursor/Cursor
+
 "  hi Cursor guifg=White guibg=#f03535 // Duller red
 hi Cursor guifg=White guibg=Red
+
 " set guifont=Iosevka\ SS06:h12
 set cursorline
 set nowrap
 set switchbuf=useopen
 set splitright
+
 " Folding with syntax mode on makes editing large files (10k+ lines) VERY SLOW
 " 	So forget about it...we weren't really using it anyway.
 set foldmethod=manual
 set foldcolumn=0
 set foldnestmax=2
+
 " Automatically unfold all folds when entering a new buffer
 autocmd BufWinEnter * silent! :%foldopen!
 set shiftwidth=0
@@ -72,53 +78,68 @@ filetype plugin indent on
 
 " Disable indenting inside extern C blocks
 set cinoptions=E-s
+
 " Disable curly bracket errors for compound literals
 let c_no_curly_error = 1
 
 " Paste from clipboard
 nnoremap <Leader><Leader><Leader>p "+P
+
 " Swap beginning of line jump (my preference)
 nnoremap 0 _
 nnoremap _ 0
+
 " Clear search
 nnoremap <Leader><Enter> :noh<Enter>:<Backspace><Esc>
+
 " Search for Numbers, Curly brackets, and any brackets
 nnoremap <Leader>w /\d\+/<Enter>
 nnoremap <Leader>r /[{}]/<Enter>
 nnoremap <Leader>s /["'{}()<>]/<Enter>
+
 " Cycle through the location list
 nnoremap <Leader>[ :lprev<Enter>zz
 nnoremap <Leader>] :lnext<Enter>zz
+
 "Cycle through the quickfix list
 nnoremap <Leader>9 :cprev<Enter>zz
 nnoremap <Leader>0 :cnext<Enter>zz
+
 " Open a tag or file in a vertical split
 nnoremap <C-W><C-V>f :exec "vert norm <C-V><C-W>f"<CR>
 nnoremap <C-W><C-V>[ :exec "vert norm <C-V><C-W>["<CR>
+
 " Maximize buffer
 nnoremap <Leader>m <C-w><Bar>
+
 " Equalize buffers
 " nnoremap <Leader>n <C-w>=  -----Equalizes horizontally and vertically
 nnoremap <Leader>n :set ead=hor ea noea<Enter>:echo<Enter>
+
 " Exit insert mode
 inoremap kj<Leader> <Escape>
 inoremap KJ<Leader> <Escape>
+
 " Create gaps above or below the current line
 nnoremap <Leader>j mto<Esc>`t
 nnoremap <Leader>k mtO<Esc>`t
 nmap <Leader>g <Leader>j<Leader>k
+
 " Open and close the location list in various ways
 nnoremap <Leader>lo :top lopen<Enter>
 nmap <Leader>lvo :vert lopen<Enter><Leader>n<Leader>n
 nmap <Leader>lc :lclose<Enter><Leader>n<Leader>n
+
 " Open and close the quickfix list in various ways
 nnoremap <Leader>co :top copen<Enter>
 nmap <Leader>cvo :vert copen<Enter><Leader>n<Leader>n
 nmap <Leader>cc :cclose<Enter><Leader>n<Leader>n
+
 " Note and Todo shortcuts
 nnoremap <Leader><Leader>c :let @t=strftime('%m-%d-%Y ')<Enter>i//NOTE(zpc <Esc>"tpi):><Right><Esc>a
 nnoremap <Leader><Leader>z :let @t=strftime('%m-%d-%Y ')<Enter>i//TODO(zpc <Esc>"tpi):><Right><Esc>a
 nnoremap <Leader><Leader>x :let @t=strftime('%m-%d-%Y ')<Enter>i//PERFORMANCE(zpc <Esc>"tpi):><Right><Esc>a
+
 " Center on jumping through files
 nmap <C-i> <C-i>zz
 nmap <C-o> <C-o>zz
@@ -145,11 +166,13 @@ nnoremap <Leader><Leader>i :vsplit ~/AppData/Local/nvim/init.vim<Enter>
 nnoremap <Leader><Leader>l :source $MYVIMRC<Enter>
 " Regenerate ctags
 nnoremap <Leader><Leader>t :! ctags_regenerate.bat<Enter>
+
 " Build Debug
 " Note-- Apparently pointless :BackspaceEnter is to workaround a bug
 " 	regarding the cursor color resetting to a default value
 " 	which is corrected on re-entering command mode
-nnoremap <Leader><Leader>r :wa<Enter>:silent make<Enter>:<Esc>:<Backspace><Esc>
+" nnoremap <Leader><Leader>r :wa<Enter>:silent make<Enter>:<Esc>:<Backspace><Esc>
+  nnoremap <Leader><Leader>r :wa<Enter>:call TryCompileAndRebuildDLL()<Enter>:<Esc>:<Backspace><Esc>
 " Execute raddebugger
 nnoremap <Leader><Leader>d :call jobstart('raddbg --auto_run')<Enter>
 " Build and debug
@@ -199,6 +222,17 @@ if exists("g:neovide")
 	let g:neovide_hide_mouse_when_typing = v:true
 endif
 
+function! TryCompileAndRebuildDLL()
+	silent make
+	if (QfError() == 0)
+		cclose
+		set ead=hor ea noea
+	else
+		vert copen
+		set ead=hor ea noea
+	endif
+endfunction
+
 function! TryCompileAndDebug()
 	silent make
 	if (QfError() == 0)
@@ -225,4 +259,5 @@ function! QfError() abort
 	return l:retval
 endfunction
 
+lua vim.filetype.add({ extension = { inc = 'cpp' } })
 lua vim.keymap.set( 'c', '<CR>', function() return vim.fn.getcmdtype() == '/' and '<CR>zzzv' or '<CR>' end, { expr = true } )
