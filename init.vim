@@ -3,21 +3,30 @@
 "	surround.vim
 "	commentary.vim
 "	ctrlp.vim
+"	lspconfig + odin language server (ols)
 "
 "ctrlp support
 
 cd C:/Work
 
-set runtimepath^=~/AppData/local/nvim/extension/ctrlp.vim
 set wildignore+=*.dll,*.lib,*.exe,*.pdb,*.obj,*.ilk,*.rdi,*.exp,*/game_ideas/*,*/lib/kinc/Kinc/Backends/*
 
+set tag=""
+set tag+= 
 set tag+=./ucrt_tags;/
+
+"CtrlP Configuration
+let g:ctrlp_root_markers = ['root.proot']
 
 " Actually search for include files within the working directory
 " set path+=~/Desktop/SDL_Program/*
-set path+=C:/Work/interdiction/**
-set path+=C:/Program\\\ Files\\\ (x86)/Windows\\\ Kits/10/Include/10.0.22000.0/ucrt/
-set path+=C:/Program\\\ Files/Microsoft\\\ Visual\\\ Studio/2022/Community/VC/Tools/MSVC/14.35.32215/include/
+set path=.
+set path+=,
+set path+=C:/Work/interdiction2/**
+set path+=C:/Program\\\ Files\\\ (x86)/Windows\\\ Kits/10/Include/10.0.26100.0/ucrt/
+set path+=C:/Program\\\ Files/Microsoft\\\ Visual\\\ Studio/2022/Community/VC/Tools/MSVC/14.44.35207/include/
+set path+=C:/Program\\\ Files\\\ (x86)/Windows\\\ Kits/10/Include/10.0.26100.0/um
+set path+=C:/Program\\\ Files\\\ (x86)/Windows\\\ Kits/10/Include/10.0.26100.0/shared
 
 " Prime the ripgrep function with:
 " 	smartcase, numbered lines, columns,
@@ -61,6 +70,7 @@ set cursorline
 set nowrap
 set switchbuf=useopen
 set splitright
+set signcolumn=yes
 
 " Folding with syntax mode on makes editing large files (10k+ lines) VERY SLOW
 " 	So forget about it...we weren't really using it anyway.
@@ -70,6 +80,9 @@ set foldnestmax=2
 
 " Automatically unfold all folds when entering a new buffer
 autocmd BufWinEnter * silent! :%foldopen!
+" Automatically switch to the C syntax highlighting, should work
+" for...somethings
+"
 set shiftwidth=0
 set tabstop=4
 set ignorecase
@@ -250,7 +263,7 @@ function! QfError() abort
 	let l:retval = 0
 
 	for l:l in l:qf
-		if l:l.text =~# 'error'
+		if l.valid
 			let l:retval = 1
 			break
 		endif
@@ -261,3 +274,8 @@ endfunction
 
 lua vim.filetype.add({ extension = { inc = 'cpp' } })
 lua vim.keymap.set( 'c', '<CR>', function() return vim.fn.getcmdtype() == '/' and '<CR>zzzv' or '<CR>' end, { expr = true } )
+
+"Old Odin Specific Stuff
+" lua vim.diagnostic.config({ virtual_text = false, virtual_lines = false, signs = false })
+" lua vim.lsp.config('ols', { cmd = { 'C:/Work/Odin_Projects/ols/bin/ols.exe' }, })
+" lua vim.lsp.enable('ols')
