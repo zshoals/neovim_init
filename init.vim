@@ -255,6 +255,8 @@ function! TryCompileAndDebug()
 	else
 		vert copen
 		set ead=hor ea noea
+		.cc
+		normal zz
 	endif
 endfunction
 
