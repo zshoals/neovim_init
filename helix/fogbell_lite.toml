@@ -47,7 +47,7 @@
 "ui.cursor" = { fg = "text_code", bg = "cursor_sub" }
 "ui.cursor.primary.normal" = { fg = "text_code", bg = "cursor_fg" }
 "ui.cursor.primary.insert" = { fg = "text_code", bg = "cursor_fg" }
-"ui.cursor.primary.select" = { fg = "text_code", bg = "cursor_fg" }
+"ui.cursor.primary.select" = { fg = "background_base", bg = "cursor_selection" }
 
 "ui.cursorline.primary" = { bg = "background_lite" }
 
@@ -60,6 +60,8 @@
 "ui.statusline.insert" = { fg = "background_base", bg = "text_code", modifiers = ["bold"] }
 "ui.statusline.select" = { fg = "background_base", bg = "text_code", modifiers = ["bold"] }
 
+#Word Jump Highlighting
+"ui.virtual"              = {  fg = "cursor_fg"  }
 
 #Syntax Highlighting
 "constant.numeric" = "text_numeric"
@@ -83,8 +85,11 @@ text_dark_soft      = "#6B6B6B"
 
 cursor_fg              = "#FF0000"
 cursor_sub             = "#FF6060"
+cursor_selection       = "#00FFFF"
 selection_bg           = "#D0D0D0"
 selection_bg_sub       = "#A0A0A0"
+
+jump_label             = "#00FFFF"
 
 color_warn             = "#D00000"
 color_error            = "#D00000"
