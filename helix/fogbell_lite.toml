@@ -1,0 +1,90 @@
+#Fogbell Lite
+
+# Original concept by jaredgorski: https://github.com/jaredgorski/fogbell.vim
+# Helix port and modifications by: zs
+
+
+
+
+
+# MIT License
+#
+# Copyright (c) 2019 Jared Gorski
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
+
+
+
+
+#Environment
+"ui.background" = { fg = "text_code", bg = "background_base" }
+"ui.background.separator" = { fg = "background_lite", bg = "background_lite"}
+
+"ui.window" = { fg = "background_lite" } 
+"ui.popup" = { fg = "text_code", bg = "background_lite" } 
+"ui.menu" = { fg = "text_code", bg = "background_lite" }
+"ui.menu.selected" = { fg = "text_code", bg = "background_lite" }
+"ui.help" = { fg = "text_code", bg = "background_lite" }
+
+"ui.cursor" = { fg = "text_code", bg = "cursor_sub" }
+"ui.cursor.primary.normal" = { fg = "text_code", bg = "cursor_fg" }
+"ui.cursor.primary.insert" = { fg = "text_code", bg = "cursor_fg" }
+"ui.cursor.primary.select" = { fg = "text_code", bg = "cursor_fg" }
+
+"ui.cursorline.primary" = { bg = "background_lite" }
+
+"ui.selection" = { fg = "background_base", bg = "selection_bg_sub" }
+"ui.selection.primary" = { fg = "background_base", bg = "selection_bg" }
+
+"ui.statusline" = { fg = "background_base", bg = "text_code" }
+"ui.statusline.inactive" = { fg = "text_dark_soft", bg = "background_lite" }
+"ui.statusline.normal" = { fg = "background_base", bg = "text_code", modifiers = ["bold"] }
+"ui.statusline.insert" = { fg = "background_base", bg = "text_code", modifiers = ["bold"] }
+"ui.statusline.select" = { fg = "background_base", bg = "text_code", modifiers = ["bold"] }
+
+
+#Syntax Highlighting
+"constant.numeric" = "text_numeric"
+string = "text_string"
+comment = "text_comment"
+
+#Hints
+error = "color_error"
+warning = "color_warning"
+
+
+[palette]
+
+text_code           = "#D0D0D0"
+text_comment        = "#FFFF00"
+text_string         = "#5A8B5A"
+text_numeric        = "#D6834D"
+background_base     = "#1C1C1C"
+background_lite     = "#262626"
+text_dark_soft      = "#6B6B6B"
+
+cursor_fg              = "#FF0000"
+cursor_sub             = "#FF6060"
+selection_bg           = "#D0D0D0"
+selection_bg_sub       = "#A0A0A0"
+
+color_warn             = "#D00000"
+color_error            = "#D00000"

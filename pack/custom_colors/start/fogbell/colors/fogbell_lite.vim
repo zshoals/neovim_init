@@ -50,11 +50,13 @@ let s:voidGreen = {'gui': '#569F7A', 'cterm256': '72'}
 let s:voidGold = {'gui': '#8E700B', 'cterm256': '136'}
 let s:voidRed = {'gui': '#821A1A', 'cterm256': '1'}
 let s:voidRed2 = {'gui': '#FF0000', 'cterm256': '196'}
+
 let s:none = {'gui': 'NONE', 'cterm256': 'NONE'}
 
 let s:voidOrange = {'gui': '#D6834D', 'cterm256': '252'}
 let s:voidYellow = {'gui': '#FFFF00', 'cterm256': '252'}
 let s:voidGreen = {'gui': '#5a8b5a', 'cterm256': '252'}
+let s:voidPurple = {'gui': '#D0ADFF', 'cterm256': '252'}
 
 " ==========================
 " Definitions
@@ -128,6 +130,8 @@ call <sid>hi('WarningMsg', s:voidSteel, s:voidRed, 'none')
 call <sid>hi('Comment', s:voidYellow, s:none, 'none')
 call <sid>hi('Number', s:voidOrange, s:none, 'none')
 call <sid>hi('Float', s:voidOrange, s:none, 'none')
+call <sid>hi('Structure', s:voidPurple, s:none, 'none')
+
 
 " Diff Mode
 if &diff
@@ -162,6 +166,7 @@ call <sid>hi('cType', s:voidSteel, s:none, 'none')
 
 " C Additions (zshoals)
 call <sid>hi('cString', s:voidGreen, s:none, 'none')
+call <sid>hi('cStructure', s:voidPurple, s:none, 'none')
 
 " C++
 call <sid>hi('cppConstant', s:voidSteel, s:none, 'none')
@@ -179,6 +184,8 @@ call <sid>hi('cppType', s:voidSteel, s:none, 'none')
 
 " C++ Additions (zshoals)
 call <sid>hi('cppString', s:voidGreen, s:none, 'none')
+call <sid>hi('cppStructure', s:voidPurple, s:none, 'none')
+call <sid>hi('cppStatement', s:voidPurple, s:none, 'none')
 
 " CSS
 call <sid>hi('cssAttr', s:voidSteel, s:none, 'none')

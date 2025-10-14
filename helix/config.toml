@@ -1,0 +1,31 @@
+theme = "fogbell_lite"
+
+[editor]
+cursorline = true
+
+[editor.cursor-shape]
+insert = "bar"
+
+[keys.normal]
+0 = "goto_line_start"
+"$" = "goto_line_end"
+V = ["select_mode", "extend_to_line_bounds"]
+
+[keys.select]
+0 = "goto_line_start"
+"$" = "goto_line_end"
+k = ["extend_line_up", "extend_to_line_bounds"]
+j = ["extend_line_down", "extend_to_line_bounds"]
+
+[keys.insert.k]
+j = { space = "normal_mode" }
+
+[keys.normal.space.space]
+k = [ "open_above", "normal_mode", "move_visual_line_down"]
+j = [ "open_below", "normal_mode"]
+
+[editor.gutters]
+layout = [
+  "diagnostics",
+  "spacer",
+]

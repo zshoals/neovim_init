@@ -11,8 +11,6 @@ cd C:/Work
 
 set wildignore+=*.dll,*.lib,*.exe,*.pdb,*.obj,*.ilk,*.rdi,*.exp,*/game_ideas/*,*/lib/kinc/Kinc/Backends/*
 
-set tag=""
-set tag+= 
 set tag+=./ucrt_tags;/
 
 "CtrlP Configuration
