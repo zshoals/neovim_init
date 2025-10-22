@@ -50,6 +50,7 @@ let s:voidGreen = {'gui': '#569F7A', 'cterm256': '72'}
 let s:voidGold = {'gui': '#8E700B', 'cterm256': '136'}
 let s:voidRed = {'gui': '#821A1A', 'cterm256': '1'}
 let s:voidRed2 = {'gui': '#FF0000', 'cterm256': '196'}
+let s:voidRed2 = {'gui': '#F0D0D0', 'cterm256': '196'}
 let s:none = {'gui': 'NONE', 'cterm256': 'NONE'}
 
 let s:voidGreen = {'gui': '#007800', 'cterm256': '252'}
@@ -63,7 +64,7 @@ let s:voidGreen = {'gui': '#007800', 'cterm256': '252'}
 call <sid>hi('ColorColumn', s:none, s:voidGray1, 'none')
 call <sid>hi('Cursor', s:voidSteel, s:voidBlack2, 'none')
 call <sid>hi('CursorColumn', s:none, s:voidGray1, 'none')
-call <sid>hi('CursorLine', s:none, s:voidGray1, 'none')
+call <sid>hi('CursorLine', s:none, s:voidRed2, 'none')
 call <sid>hi('CursorLineNr', s:voidBlack, s:voidGray1, 'none')
 call <sid>hi('Directory', s:voidBlack, s:none, 'none')
 call <sid>hi('FoldColumn', s:none, s:voidGray4, 'none')
@@ -75,7 +76,7 @@ call <sid>hi('Normal', s:voidBlack, s:voidSteel, 'none')
 call <sid>hi('Pmenu', s:voidBlack, s:voidGray4, 'none')
 call <sid>hi('PmenuSel', s:voidSteel, s:voidGray2, 'none')
 call <sid>hi('Search', s:voidSteel, s:voidGold, 'none')
-call <sid>hi('SignColumn', s:none, s:voidBlack2, 'none')
+call <sid>hi('SignColumn', s:none, s:voidSteel, 'none')
 call <sid>hi('StatusLine', s:voidSteel, s:voidBlack, 'none')
 call <sid>hi('StatusLineNC', s:voidGray3, s:voidBlack2, 'none')
 call <sid>hi('VertSplit', s:voidBlack, s:none, 'none')
@@ -117,7 +118,7 @@ call <sid>hi('Type', s:none, s:none, 'none')
 call <sid>hi('Underlined', s:none, s:none, 'underline')
 call <sid>hi('WarningMsg', s:voidBlack, s:voidRed, 'none')
 
-call <sid>hi('Comment', s:voidRed, s:none, 'none')
+call <sid>hi('Comment', s:voidRed, s:voidRed2, 'none')
 
 " Diff Mode
 if &diff

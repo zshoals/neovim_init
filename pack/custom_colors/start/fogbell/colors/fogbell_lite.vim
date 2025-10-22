@@ -58,6 +58,12 @@ let s:voidYellow = {'gui': '#FFFF00', 'cterm256': '252'}
 let s:voidGreen = {'gui': '#5a8b5a', 'cterm256': '252'}
 let s:voidPurple = {'gui': '#D0ADFF', 'cterm256': '252'}
 
+" Temporarily remove all other colors except comment colors
+let s:voidYellow = {'gui': '#FFFF00', 'cterm256': '252'}
+let s:voidOrange = s:voidSteel
+let s:voidGreen  = s:voidSteel
+let s:voidPurple = s:voidSteel
+
 " ==========================
 " Definitions
 " ==========================

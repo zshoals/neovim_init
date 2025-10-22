@@ -7,7 +7,11 @@
 "
 "ctrlp support
 
-cd C:/Work
+" Standard tee is no longer supplied with neovim despite nv
+" being dependent on it; use rust coreutils tee instead
+set shellpipe=2>&1\|\ coreutils\ tee
+
+"cd C:/Work
 
 set wildignore+=*.dll,*.lib,*.exe,*.pdb,*.obj,*.ilk,*.rdi,*.exp,*/game_ideas/*,*/lib/kinc/Kinc/Backends/*
 
@@ -20,7 +24,7 @@ let g:ctrlp_root_markers = ['root.proot']
 " set path+=~/Desktop/SDL_Program/*
 set path=.
 set path+=,
-set path+=C:/Work/interdiction2/**
+set path+=C:/Work/pipedream/**
 set path+=C:/Program\\\ Files\\\ (x86)/Windows\\\ Kits/10/Include/10.0.26100.0/ucrt/
 set path+=C:/Program\\\ Files/Microsoft\\\ Visual\\\ Studio/2022/Community/VC/Tools/MSVC/14.44.35207/include/
 set path+=C:/Program\\\ Files\\\ (x86)/Windows\\\ Kits/10/Include/10.0.26100.0/um
@@ -223,16 +227,6 @@ function! SwapExtPrintError(msg) abort
     echohl None
 endfunction
 
-" Neovide configuration if it's active
-if exists("g:neovide")
-	let g:neovide_cursor_vfx_mode = ""
-	let g:neovide_cursor_trail_size = 0.0
-	let g:neovide_cursor_animation_length = 0.0
-	let g:neovide_scroll_animation_length = 0.0
-
-	let g:neovide_hide_mouse_when_typing = v:true
-endif
-
 function! TryCompileAndRebuildDLL()
 	silent make
 	if (QfError() == 0)
@@ -275,7 +269,3 @@ endfunction
 lua vim.filetype.add({ extension = { inc = 'cpp' } })
 lua vim.keymap.set( 'c', '<CR>', function() return vim.fn.getcmdtype() == '/' and '<CR>zzzv' or '<CR>' end, { expr = true } )
 
-"Old Odin Specific Stuff
-" lua vim.diagnostic.config({ virtual_text = false, virtual_lines = false, signs = false })
-" lua vim.lsp.config('ols', { cmd = { 'C:/Work/Odin_Projects/ols/bin/ols.exe' }, })
-" lua vim.lsp.enable('ols')
