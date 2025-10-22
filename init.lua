@@ -1,18 +1,15 @@
 -- zpc config
 
-
-
--- Lead on
+-- Leader configuration
 vim.keymap.set('n', '<Space>', '<Nop>', { remap = false } )
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
-
-
 
 -- Standard tee is no longer supplied with neovim despite neovim
 -- being dependent on it; use rust coreutils tee instead
 vim.opt.shellpipe = '2>&1| coreutils tee'
 
+-- Filetypes to exclude from searches
 vim.opt.wildignore:append('*.dll')
 vim.opt.wildignore:append('*.lib')
 vim.opt.wildignore:append('*.exe')
@@ -22,8 +19,11 @@ vim.opt.wildignore:append('*.ilk')
 vim.opt.wildignore:append('*.rdi')
 vim.opt.wildignore:append('*.exp')
 
+-- Additional tags file to search, 
+-- ucrt tags contains the msvc headers
 vim.opt.tag:append('./ucrt_tags;/')
 
+-- Path configuration for navigating headers and sources
 vim.opt.path = { '.' }
 vim.opt.path:append(',')
 vim.opt.path:append('C:/Work/pipedream/**')
@@ -39,15 +39,11 @@ vim.opt.grepformat = '%f:%l:%c:%m'
 -- Local build script
 vim.opt.makeprg = 'build.bat'
 
-
-
 -- Theme and Font
 vim.cmd.colorscheme("fogbell_lite")
 vim.opt.guifont = { 'Iosevka SS06:h12' }
 vim.opt.guicursor = { 'n-v-c-sm:block-Cursor/Cursor,i-ci-ve:ver25-Cursor/Cursor,r-cr-o:hor20-Cursor/Cursor' }
-vim.cmd.highlight( {"Cursor", "guifg=White", "guibg=Red" } )
-
-
+vim.cmd.highlight( { "Cursor", "guifg=White", "guibg=Red" } )
 
 -- Editor preferences
 vim.opt.cursorline = true
@@ -60,8 +56,7 @@ vim.opt.tabstop = 4
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.cmd("filetype plugin indent on")
-
-
+vim.opt.iskeyword:remove( { "_" } )
 
 -- Split equalization (50/50 splits)
 function equalize_buffers()
@@ -74,8 +69,6 @@ end
 --   normalize splits the first time it is used
 equalize_buffers()
 
-
-
 -- Disable all folding
 vim.opt.foldmethod = "manual"
 vim.opt.foldcolumn = "0"
@@ -85,8 +78,6 @@ vim.api.nvim_create_autocmd( {"BufWinEnter"}, {
 	command = "silent! :%foldopen!",
 })
 
-
-
 -- Do not allow modifications to read only buffers
 local no_mod_when_readonly = vim.api.nvim_create_augroup('nomodreadonly', { clear = true })
 vim.api.nvim_create_autocmd( { "BufRead" }, {
@@ -95,9 +86,6 @@ vim.api.nvim_create_autocmd( { "BufRead" }, {
 	command = "let &l:modifiable = !&readonly",
 })
 
-
-
-
 -- Disable indenting inside extern C blocks
 vim.opt.cinoptions = { "E-s" }
 -- Disable curly bracket errors for compound literals
@@ -105,6 +93,8 @@ vim.g.c_no_curly_error = 1
 
 vim.g.netrw_liststyle = 3
 vim.filetype.add({ extension = { inc = 'cpp' } })
+
+
 
 
 
@@ -135,10 +125,6 @@ noremap_bind('_', '0')
 
 --Clear highlighting
 noremap_bind('<Leader><Enter>', ':noh<Enter>:<Backspace><Esc>')
-
---vim.keymap.set('n', '<Leader>w', '/\d\+/<Enter>', { noremap = true } )
---vim.keymap.set('n', '<Leader>r', '/[{}]/<Enter>', { noremap = true } )
---vim.keymap.set('n', '<Leader>s', '/["\'{}()<>]/<Enter>', { noremap = true } )
 
 -- Cycle the quickfix and location lists
 noremap_bind('<Leader>[', ':lprev<Enter>zz')
@@ -209,14 +195,22 @@ norm_bind('<C-]>', '<C-]>zz')
 norm_bind('n', 'nzz')
 norm_bind('N', 'Nzz')
 
+-- This forces searches to immediately jump and center on the search target
+vim.keymap.set('c', '<CR>', function() return vim.fn.getcmdtype() == '/' and '<CR>zzzv' or '<CR>' end, { expr = true } )
+
 -- Fast grep
 noremap_bind('<Leader>f', ':silent lgrep ')
 
 -- Open and reload source files
 noremap_bind('<Leader><Leader>i', ':vsplit ~/AppData/Local/nvim/init.lua<Enter>')
 noremap_bind('<Leader><Leader>l', ':luafile $MYVIMRC<Enter>')
--- This forces searches to immediately jump and center on the search target
-vim.keymap.set('c', '<CR>', function() return vim.fn.getcmdtype() == '/' and '<CR>zzzv' or '<CR>' end, { expr = true } )
+
+-- Start searches for braces/numbers
+noremap_bind('<Leader>w', '/\\d\\+/<Enter>')
+noremap_bind('<Leader>r', '/[{}]/<Enter>')
+noremap_bind('<Leader>s', '/["\'{}()<>]/<Enter>')
+
+
 
 
 
@@ -281,5 +275,4 @@ end
 noremap_bind('<Leader><Leader>r', build_try_compile_and_rebuild_dll)
 noremap_bind('<Leader><Leader>e', build_try_compile_and_debug)
 noremap_bind('<Leader><Leader>d', ':call jobstart(\'raddbg --auto_run\')<Enter>')
-
 
