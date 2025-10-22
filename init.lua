@@ -228,13 +228,22 @@ vim.keymap.set('c', '<CR>', function() return vim.fn.getcmdtype() == '/' and '<C
 noremap_bind('<Leader><Leader>t', ':! ctags_regenerate.bat<Enter>')
 
 -- Compile and Debug
+
 function qferror()
 	local qf = vim.fn.getqflist()
 
+	function has_cpp_standard_error(l)
+		return (l.valid ~= 0)
+	end
+
+	function has_cpp_include_error(l)
+		return (string.find(l.text, "Cannot open include file:") ~= nil)
+	end
+
 	for i, l in ipairs(qf) do
-		if (l.valid ~= 0) then
+		if (has_cpp_standard_error(l)) then
 			return true
-		elseif (string.find(l.text, "Cannot open include file:") ~= nil) then
+		elseif (has_cpp_include_error(l)) then
 			return true
 		end
 	end
