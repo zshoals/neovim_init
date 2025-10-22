@@ -60,9 +60,9 @@ vim.opt.iskeyword:remove( { "_" } )
 
 -- Split equalization (50/50 splits)
 function equalize_buffers()
-	vim.cmd("set ead=hor ea noea")
-	vim.cmd("echo")
+	vim.cmd("set ead=hor noea ea")
 end
+
 -- Actually execute split equalization on startup,
 --   as buffers are not
 --   initially equalized meaning this doesn't
@@ -73,8 +73,10 @@ equalize_buffers()
 vim.opt.foldmethod = "manual"
 vim.opt.foldcolumn = "0"
 vim.opt.foldnestmax = 2
+local no_fold_group = vim.api.nvim_create_augroup('nofoldingever', { clear = true })
 vim.api.nvim_create_autocmd( {"BufWinEnter"}, {
 	pattern = { "*" },
+	group = "nofoldingever",
 	command = "silent! :%foldopen!",
 })
 
@@ -202,7 +204,11 @@ vim.keymap.set('c', '<CR>', function() return vim.fn.getcmdtype() == '/' and '<C
 noremap_bind('<Leader>f', ':silent lgrep ')
 
 -- Open and reload source files
-noremap_bind('<Leader><Leader>i', ':vsplit ~/AppData/Local/nvim/init.lua<Enter>')
+function open_config_file()
+	vim.cmd(":vsplit ~/AppData/Local/nvim/init.lua")
+	equalize_buffers()
+end
+noremap_bind('<Leader><Leader>i', open_config_file)
 noremap_bind('<Leader><Leader>l', ':luafile $MYVIMRC<Enter>')
 
 -- Start searches for braces/numbers
@@ -250,10 +256,10 @@ function build_try_compile_and_rebuild_dll()
 
 	if (qferror()) then
 		vim.cmd("vert copen")
-		vim.cmd("set ead=hor ea noea")
+		equalize_buffers()
 	else
 		vim.cmd("cclose")
-		vim.cmd("set ead=hor ea noea")
+		equalize_buffers()
 	end
 end
 
@@ -262,12 +268,12 @@ function build_try_compile_and_debug()
 
 	if (qferror()) then
 		vim.cmd("vert copen")
-		vim.cmd("set ead=hor ea noea")
+		equalize_buffers()
 		vim.cmd(".cc")
 		vim.cmd("normal zz")
 	else
 		vim.cmd("cclose")
-		vim.cmd("set ead=hor ea noea")
+		equalize_buffers()
 		vim.cmd("call jobstart('raddbg --auto_run')")
 	end
 end
@@ -275,4 +281,16 @@ end
 noremap_bind('<Leader><Leader>r', build_try_compile_and_rebuild_dll)
 noremap_bind('<Leader><Leader>e', build_try_compile_and_debug)
 noremap_bind('<Leader><Leader>d', ':call jobstart(\'raddbg --auto_run\')<Enter>')
+
+
+
+
+
+
+-- Plugin management
+-- uh oh
+
+
+
+
 
