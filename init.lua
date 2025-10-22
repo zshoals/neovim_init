@@ -89,7 +89,7 @@ vim.api.nvim_create_autocmd( {"BufWinEnter"}, {
 
 -- Do not allow modifications to read only buffers
 local no_mod_when_readonly = vim.api.nvim_create_augroup('nomodreadonly', { clear = true })
-vim.api.nvim_create_autocmd( {"BufRead" }, {
+vim.api.nvim_create_autocmd( { "BufRead" }, {
 	pattern = "*",
 	group = "nomodreadonly",
 	command = "let &l:modifiable = !&readonly",
@@ -214,7 +214,7 @@ noremap_bind('<Leader>f', ':silent lgrep ')
 
 -- Open and reload source files
 noremap_bind('<Leader><Leader>i', ':vsplit ~/AppData/Local/nvim/init.lua<Enter>')
-noremap_bind('<Leader><Leader>l', ':source $MYVIMRC<Enter>')
+noremap_bind('<Leader><Leader>l', ':luafile $MYVIMRC<Enter>')
 -- This forces searches to immediately jump and center on the search target
 vim.keymap.set('c', '<CR>', function() return vim.fn.getcmdtype() == '/' and '<CR>zzzv' or '<CR>' end, { expr = true } )
 
@@ -230,16 +230,16 @@ noremap_bind('<Leader><Leader>t', ':! ctags_regenerate.bat<Enter>')
 -- Compile and Debug
 function qferror()
 	local qf = vim.fn.getqflist()
-	local error = false
 
 	for i, l in ipairs(qf) do
 		if (l.valid ~= 0) then
-			error = true
-			return retval
+			return true
+		elseif (string.find(l.text, "Cannot open include file:") ~= nil) then
+			return true
 		end
 	end
 
-	return retval
+	return false
 end
 
 function build_try_compile_and_rebuild_dll()
