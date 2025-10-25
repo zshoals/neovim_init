@@ -30,7 +30,7 @@ vim.opt.path = { '.' }
 vim.opt.path:append(',')
 vim.opt.path:append('C:/Work/pipedream/**')
 vim.opt.path:append('C:/Program\\ Files\\ (x86)/Windows\\ Kits/10/Include/10.0.26100.0/ucrt/')
-vim.opt.path:append('C:/Program\\ Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/include/')
+vim.opt.path:append('C:/Program\\ Files/Microsoft\\ Visual\\ Studio/2022/Community/VC/Tools/MSVC/14.44.35207/include/')
 vim.opt.path:append('C:/Program\\ Files\\ (x86)/Windows\\ Kits/10/Include/10.0.26100.0/um/')
 vim.opt.path:append('C:/Program\\ Files\\ (x86)/Windows\\ Kits/10/Include/10.0.26100.0/shared/')
 
@@ -88,6 +88,16 @@ vim.api.nvim_create_autocmd( { "BufRead" }, {
 	pattern = "*",
 	group = "nomodreadonly",
 	command = "let &l:modifiable = !&readonly",
+})
+
+-- Do not allow modifications to anything in program files
+vim.api.nvim_create_autocmd( { "BufRead" }, {
+	pattern = "c:/program*",
+	group = "nomodreadonly",
+	callback = function()
+		vim.o.readonly = true
+		vim.o.modifiable = false
+	end,
 })
 
 -- Disable indenting inside extern C blocks
@@ -396,14 +406,12 @@ end
 noremap_bind('s', justhop)
 
 -- fzf-lua
-noremap_bind('<C-p>', [[:lua require("fzf-lua").files({ file_icons = false, color_icons = false })<CR>]])
-noremap_bind('<Leader><C-p>', [[:lua require("fzf-lua").builtin({ file_icons = false, color_icons = false })<CR>]])
-noremap_bind('<C-b>', [[:lua require("fzf-lua").buffers()<CR>]])
-
+noremap_bind('<Leader>fx', [[:lua require("fzf-lua").builtin()<CR>]])
 noremap_bind('<Leader>fp', [[:lua require("fzf-lua").files()<CR>]])
+noremap_bind('<Leader>fb', [[:lua require("fzf-lua").buffers()<CR>]])
 noremap_bind('<Leader>fa', [[:lua require("fzf-lua").grep()<CR>]])
 noremap_bind('<Leader>ft', [[:lua require("fzf-lua").treesitter()<CR>]])
-noremap_bind('<Leader>ff', [=[:lua require("fzf-lua").treesitter()<CR>[function]]=])
-noremap_bind('<Leader>fs', [=[:lua require("fzf-lua").treesitter()<CR>[type]]=])
+noremap_bind('<Leader>ff', [=[:lua require("fzf-lua").treesitter()<CR>[function] ]=])
+noremap_bind('<Leader>fs', [=[:lua require("fzf-lua").treesitter()<CR>[type] ]=])
 
 
