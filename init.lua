@@ -9,6 +9,8 @@ vim.g.maplocalleader = " "
 -- being dependent on it; use rust coreutils tee instead
 vim.opt.shellpipe = '2>&1| coreutils tee'
 
+vim.opt.shada = ''
+
 -- Filetypes to exclude from searches
 vim.opt.wildignore:append('*.dll')
 vim.opt.wildignore:append('*.lib')
@@ -27,10 +29,10 @@ vim.opt.tag:append('./ucrt_tags;/')
 vim.opt.path = { '.' }
 vim.opt.path:append(',')
 vim.opt.path:append('C:/Work/pipedream/**')
-vim.opt.path:append('C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/ucrt/')
-vim.opt.path:append('C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/include/')
-vim.opt.path:append('C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/um')
-vim.opt.path:append('C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/shared')
+vim.opt.path:append('C:/Program\\ Files\\ (x86)/Windows\\ Kits/10/Include/10.0.26100.0/ucrt/')
+vim.opt.path:append('C:/Program\\ Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/include/')
+vim.opt.path:append('C:/Program\\ Files\\ (x86)/Windows\\ Kits/10/Include/10.0.26100.0/um/')
+vim.opt.path:append('C:/Program\\ Files\\ (x86)/Windows\\ Kits/10/Include/10.0.26100.0/shared/')
 
 -- Use Ripgrep
 vim.opt.grepprg = 'rg -S -n --column --vimgrep --no-require-git'
@@ -201,7 +203,8 @@ norm_bind('N', 'Nzz')
 vim.keymap.set('c', '<CR>', function() return vim.fn.getcmdtype() == '/' and '<CR>zzzv' or '<CR>' end, { expr = true } )
 
 -- Fast grep
-noremap_bind('<Leader>f', ':silent lgrep ')
+-- Invalidated by fzf-lua? Experiment without it for awhile
+-- noremap_bind('<Leader>f', ':silent lgrep ')
 
 -- Open and reload source files
 function open_config_file()
@@ -256,6 +259,7 @@ function build_try_compile_and_rebuild_dll()
 
 	if (qferror()) then
 		vim.cmd("vert copen")
+		vim.cmd(".cc")
 		equalize_buffers()
 	else
 		vim.cmd("cclose")
@@ -290,7 +294,116 @@ noremap_bind('<Leader><Leader>d', ':call jobstart(\'raddbg --auto_run\')<Enter>'
 -- Plugin management
 -- uh oh
 
+-- Most of this is ripped from kickstart.lua
+--
+-- [[ Install `lazy.nvim` plugin manager ]]
+--    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
+local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
+  local out = vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
+  if vim.v.shell_error ~= 0 then
+    error('Error cloning lazy.nvim:\n' .. out)
+  end
+end
+
+---@type vim.Option
+local rtp = vim.opt.rtp
+rtp:prepend(lazypath)
 
 
+function fzf_use_existing_buffer(sel, opts)
+	if not require("fzf-lua").actions.file_switch({ sel[1] }, opts) then require("fzf-lua").actions.file_edit({ sel[1] }, opts) end
+end
+
+require("lazy").setup({
+	spec = {
+
+		"kana/vim-niceblock",
+		"tpope/vim-surround",
+		"tpope/vim-commentary",
+
+		"neovim/nvim-lspconfig",
+
+		{
+			'smoka7/hop.nvim',
+			version = "*",
+			opts = {
+				keys = 'etovxqpdygfblzhckisuran'
+			}
+		},
+
+
+		{
+		  "ibhagwan/fzf-lua",
+		  -- optional for icon support
+		  dependencies = { "nvim-tree/nvim-web-devicons" },
+		  -- or if using mini.icons/mini.nvim
+		  -- dependencies = { "nvim-mini/mini.icons" },
+
+		  opts = {
+			  defaults = 
+			  {
+				  file_icons = false,
+				  color_icons = false,
+			  },
+			  actions = {
+				  files = {
+					  true,
+					  ["enter"] = fzf_use_existing_buffer
+				  },
+				  buffers = {
+					  ["enter"] = fzf_use_existing_buffer
+				  },
+				  grep = {
+					  ["enter"] = fzf_use_existing_buffer
+				  },
+			   },
+		   },
+		},
+
+		{
+			"nvim-treesitter/nvim-treesitter",
+			branch = "master",
+			lazy = false,
+			build = ":TSUpdate",
+			opts = {
+				ensure_installed = {
+					"c",
+					"cpp",
+					"lua",
+					"luadoc",
+					"markdown",
+					"markdown_inline",
+				},
+				auto_install = false,
+				highlight = { enable = false },
+				indent = { enable = false },
+			},
+		},
+	
+	},
+	checker = { enabled = true },
+})
+
+-- Plugin Binds
+--
+-- hop
+function justhop()
+	require("hop").hint_words( { multi_windows = true } )
+end
+
+noremap_bind('s', justhop)
+
+-- fzf-lua
+noremap_bind('<C-p>', [[:lua require("fzf-lua").files({ file_icons = false, color_icons = false })<CR>]])
+noremap_bind('<Leader><C-p>', [[:lua require("fzf-lua").builtin({ file_icons = false, color_icons = false })<CR>]])
+noremap_bind('<C-b>', [[:lua require("fzf-lua").buffers()<CR>]])
+
+noremap_bind('<Leader>fp', [[:lua require("fzf-lua").files()<CR>]])
+noremap_bind('<Leader>fa', [[:lua require("fzf-lua").grep()<CR>]])
+noremap_bind('<Leader>ft', [[:lua require("fzf-lua").treesitter()<CR>]])
+noremap_bind('<Leader>ff', [=[:lua require("fzf-lua").treesitter()<CR>[function]]=])
+noremap_bind('<Leader>fs', [=[:lua require("fzf-lua").treesitter()<CR>[type]]=])
 
 
