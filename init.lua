@@ -126,6 +126,11 @@ function ins_noremap_bind(lhs, rhs)
 	vim.keymap.set('i', lhs, rhs, { remap = false } )
 end
 
+function vis_noremap_bind(lhs, rhs)
+	vim.keymap.set('v', lhs, rhs, { remap = false } )
+end
+
+
 -- Exit insert mode
 ins_noremap_bind('kj<Leader>', '<Escape>')
 ins_noremap_bind('KJ<Leader>', '<Escape>')
@@ -331,7 +336,7 @@ require("lazy").setup({
 
 		"kana/vim-niceblock",
 		"tpope/vim-surround",
-		"tpope/vim-commentary",
+		--"tpope/vim-commentary",
 
 		"neovim/nvim-lspconfig",
 
@@ -415,3 +420,241 @@ noremap_bind('<Leader>ff', [=[:lua require("fzf-lua").treesitter()<CR>[function]
 noremap_bind('<Leader>fs', [=[:lua require("fzf-lua").treesitter()<CR>[type] ]=])
 
 
+
+function swapit_ring()
+	return {
+		head = 1,
+		capacity = 0,
+		data = {},
+	}
+end
+
+function swapit_ring_push(ring, element)
+	ring.capacity = ring.capacity + 1
+	ring.data[ring.capacity] = element
+end
+
+function swapit_ring_clear(ring)
+	ring = swapit_ring()
+end
+
+function swapit_ring_copy(dest, source)
+	dest.head = source.head
+	dest.capacity = source.capacity
+
+	for k, v in pairs(source.data) do
+		dest.data[k] = v
+	end
+end
+
+function swapit_ring_print(ring)
+	local iter = swapit_ring_iter(ring)
+	local out = {}
+	out.data = {}
+	out.capacity = ring.capacity
+	out.head = ring.head
+
+	local i = 1
+	local elem = {}
+	while true do 
+		local res = swapit_ring_iter_next(iter)
+		if (res) then
+			out.data[i] = res
+			i = i + 1
+		else
+			break
+		end
+	end
+
+	vim.print(out)
+end
+
+function swapit_ring_cycle_forward(ring)
+	local function ring_wrap(index, capacity)
+		local i = index
+		if (i > capacity) then
+			i = 1
+		end
+
+		return i
+	end
+
+	ring.head = ring_wrap(ring.head + 1, ring.capacity)
+end
+
+function swapit_ring_cycle_backward(ring)
+	local function ring_wrap(index, capacity)
+		local i = index
+		if (i < 1) then
+			i = capacity
+		end
+
+		return i
+	end
+
+	ring.head = ring_wrap(ring.head - 1, ring.capacity)
+end
+
+function swapit_ring_wrap_index(index, capacity)
+	local i = index
+	if (i > capacity) then i = 1
+	elseif (i < 1) then i = capacity end
+
+	return i
+end
+
+function swapit_ring_iter(ring)
+	local iter = {
+		ring = ring,
+		index = ring.head,
+		count = 0,
+	}
+
+	return iter
+end
+
+function swapit_ring_iter_next(iter)
+	if (iter.count < iter.ring.capacity) then
+		local target_index = iter.index
+		iter.count = iter.count + 1
+		iter.index = swapit_ring_wrap_index(iter.index + 1, iter.ring.capacity)
+
+		return iter.ring.data[target_index]
+	else
+		return nil
+	end
+end
+
+function swapit_clear(ctx)
+	swapit_ctx.ring_current = swapit_ring()
+	swapit_ctx.ring_old = swapit_ring()
+end
+
+function swapit_print(ctx)
+	vim.print(ctx)
+	swapit_ring_print(ctx.ring_current)
+	swapit_ring_print(ctx.ring_old)
+end
+
+swapit_ctx = {
+	ring_old = swapit_ring(),
+	ring_current = swapit_ring(),
+}
+
+function swapit_rotate_forward(ctx)
+	--swapit_ring_copy(ctx.ring_old, ctx.ring_current)
+	swapit_ring_cycle_forward(ctx.ring_current)
+
+	local old_iter = swapit_ring_iter(ctx.ring_old)
+	local current_iter = swapit_ring_iter(ctx.ring_current)
+
+	while true do
+		local old_res = swapit_ring_iter_next(old_iter)
+		local current_res = swapit_ring_iter_next(current_iter)
+
+
+		local function clamp(n, max)
+			local out = n
+			if (out > max) then 
+				return max 
+			else
+				return out
+			end
+		end
+
+		if (old_res) then
+			local tline = vim.api.nvim_buf_get_lines(
+				old_res.buffer,
+				old_res.xy_s[1] - 1,
+				old_res.xy_s[1],
+				true
+			)
+
+			local max_len = string.len(tline[1])
+
+			vim.api.nvim_buf_set_text(
+				old_res.buffer, 
+				old_res.xy_s[1] - 1, old_res.xy_s[2],
+				old_res.xy_s[1] - 1, old_res.xy_s[2],
+				current_res.text
+			)
+
+
+			local current_res_len = current_res.xy_e[2] - current_res.xy_s[2]
+			local old_res_len = old_res.xy_e[2] - old_res.xy_s[2]
+			vim.api.nvim_buf_set_text(
+				old_res.buffer, 
+				old_res.xy_s[1] - 1, 0,
+				old_res.xy_s[1] - 1, (current_res_len + old_res_len + 1),
+				--current_res.text
+				{}
+			)
+
+			-- old_res.xy_s[1] = current_res.xy_s[1]
+			-- old_res.xy_s[2] = current_res.xy_s[2]
+			-- old_res.xy_e[1] = current_res.xy_e[1]
+			-- old_res.xy_e[2] = current_res.xy_e[2] + old_res_len
+			-- old_res.buffer = current_res.buffer
+			--
+			-- current_res.buffer = old_res.buffer
+			-- current_res.xy_s[1] = old_res.xy_s[1]
+			-- current_res.xy_s[2] = old_res.xy_s[2]
+			-- current_res.xy_e[1] = old_res.xy_e[1]
+			-- current_res.xy_e[2] = old_res.xy_s[2] + current_res_len
+
+
+			--
+
+		else
+			break
+		end
+	end
+
+	-- swapit_ring_cycle_forward(ctx.ring_old)
+
+	-- swapit_ring_print(ctx.ring_current)
+	-- swapit_ring_print(ctx.ring_old)
+end
+
+function swapit_select(ctx)
+
+	local function copy_sel(selection)
+		local out = {}
+
+		out.buffer = selection.buffer
+		out.xy_s = {}
+		out.xy_e = {}
+		out.xy_s[1] = selection.xy_s[1]
+		out.xy_s[2] = selection.xy_s[2]
+		out.xy_e[1] = selection.xy_e[1]
+		out.xy_e[2] = selection.xy_e[2]
+
+		out.text = selection.text
+
+		return out
+	end
+
+	local selection = {} 
+
+	selection.buffer = vim.api.nvim_get_current_buf()
+	selection.xy_s = vim.api.nvim_buf_get_mark(0, "<")
+	selection.xy_e = vim.api.nvim_buf_get_mark(0, ">")
+
+	selection.text = vim.api.nvim_buf_get_text(
+		selection.buffer, 
+		selection.xy_s[1] - 1, selection.xy_s[2],
+		selection.xy_e[1] - 1, selection.xy_e[2] + 1,
+		{}
+	)
+
+	vim.print(selection.text)
+
+	swapit_ring_push(ctx.ring_current, selection)
+	swapit_ring_push(ctx.ring_old, copy_sel(selection))
+end
+
+vis_noremap_bind("<C-p>", ":lua swapit_select(swapit_ctx)<CR>")
+noremap_bind("<Leader><C-p>", ":lua swapit_clear(swapit_ctx)<CR>")
+noremap_bind("<Leader><Leader><C-p>", ":lua swapit_print(swapit_ctx)<CR>")
+
+noremap_bind("<C-f>", ":lua swapit_rotate_forward(swapit_ctx)<CR>")
