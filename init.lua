@@ -28,7 +28,7 @@ vim.opt.tag:append('./ucrt_tags;/')
 -- Path configuration for navigating headers and sources
 vim.opt.path = { '.' }
 vim.opt.path:append(',')
-vim.opt.path:append('C:/Work/pipedream/**')
+--vim.opt.path:append('C:/Work/pipedream/**')
 vim.opt.path:append('C:/Program\\ Files\\ (x86)/Windows\\ Kits/10/Include/10.0.26100.0/ucrt/')
 vim.opt.path:append('C:/Program\\ Files/Microsoft\\ Visual\\ Studio/2022/Community/VC/Tools/MSVC/14.44.35207/include/')
 vim.opt.path:append('C:/Program\\ Files\\ (x86)/Windows\\ Kits/10/Include/10.0.26100.0/um/')
@@ -336,7 +336,6 @@ require("lazy").setup({
 
 		"kana/vim-niceblock",
 		"tpope/vim-surround",
-		--"tpope/vim-commentary",
 
 		"neovim/nvim-lspconfig",
 
@@ -347,6 +346,17 @@ require("lazy").setup({
 				keys = 'etovxqpdygfblzhckisuran'
 			}
 		},
+
+		{
+			"gbprod/substitute.nvim",
+			opts = {
+				highlight_substituted_text = {
+					enabled = false,
+					timer = 0
+				},
+			},
+		},
+
 
 
 		{
@@ -361,6 +371,7 @@ require("lazy").setup({
 			  {
 				  file_icons = false,
 				  color_icons = false,
+				  multiprocess = false,
 			  },
 			  actions = {
 				  files = {
@@ -419,3 +430,11 @@ noremap_bind('<Leader>ft', [[:lua require("fzf-lua").treesitter()<CR>]])
 noremap_bind('<Leader>ff', [=[:lua require("fzf-lua").treesitter()<CR>[function] ]=])
 noremap_bind('<Leader>fs', [=[:lua require("fzf-lua").treesitter()<CR>[type] ]=])
 
+-- substitute
+vim.keymap.set("x", "<C-p>", require("substitute").visual, { remap = false })
+vim.keymap.set("x", "<C-s>", require("substitute.exchange").visual, { remap = false })
+
+-- glaregun
+vim.keymap.set("n", "<C-l>", ":lua require('degauss_loader').try_load()<CR>", { remap = false })
+vim.keymap.set("n", "<Leader><C-l>", ":lua require('degauss_loader').shutdown()<CR>", { remap = false })
+vim.cmd("hi NormalFloat guibg=#ff4400")
