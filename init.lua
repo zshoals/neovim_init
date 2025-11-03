@@ -155,6 +155,14 @@ noremap_bind('<Leader>0', ':cnext<Enter>zz')
 noremap_bind('<Leader>m', '<C-w><Bar>')
 noremap_bind('<Leader>n', equalize_buffers)
 
+-- Cycle windows
+-- Note: Due to limitations with Vim, rebinding just Tab
+-- overrides CTRL-i with whatever Tab is bound to.
+--
+-- TODO: C-h/j/k are all empty. l is redraw screen
+-- bind to some cool stuff?
+noremap_bind('<S-Tab>', '<C-w>w')
+
 -- Create gaps above and below lines
 noremap_bind('<Leader>j', 'mto<Esc>`t')
 noremap_bind('<Leader>k', 'mtO<Esc>`t')
@@ -206,9 +214,9 @@ noremap_bind('<Leader><Leader>z', ':let @t=strftime(\'%m-%d-%Y \')<Enter>i//TODO
 noremap_bind('<Leader><Leader>x', ':let @t=strftime(\'%m-%d-%Y \')<Enter>i//PERFORMANCE(zpc <Esc>"tpi):><Right><Esc>a')
 
 -- Center screen on jumping through files
-norm_bind('<C-i>', '<C-i>zz')
-norm_bind('<C-o>', '<C-o>zz')
-norm_bind('<C-]>', '<C-]>zz')
+noremap_bind('<C-i>', '<C-i>zz')
+noremap_bind('<C-o>', '<C-o>zz')
+noremap_bind('<C-]>', '<C-]>zz')
 
 -- Center screen on search
 norm_bind('n', 'nzz')
@@ -250,11 +258,11 @@ noremap_bind('<Leader><Leader>t', ':! ctags_regenerate.bat<Enter>')
 function qferror()
 	local qf = vim.fn.getqflist()
 
-	function has_cpp_standard_error(l)
+	local function has_cpp_standard_error(l)
 		return (l.valid ~= 0)
 	end
 
-	function has_cpp_include_error(l)
+	local function has_cpp_include_error(l)
 		return (string.find(l.text, "Cannot open include file:") ~= nil)
 	end
 
@@ -359,33 +367,39 @@ require("lazy").setup({
 
 
 
-		{
-		  "ibhagwan/fzf-lua",
-		  -- optional for icon support
-		  dependencies = { "nvim-tree/nvim-web-devicons" },
-		  -- or if using mini.icons/mini.nvim
-		  -- dependencies = { "nvim-mini/mini.icons" },
+		-- {
+		--   "ibhagwan/fzf-lua",
+		--   -- optional for icon support
+		--   dependencies = { "nvim-tree/nvim-web-devicons" },
+		--   -- or if using mini.icons/mini.nvim
+		--   -- dependencies = { "nvim-mini/mini.icons" },
+		--   branch = "2413",
+		--
+		--   opts = {
+		-- 	  defaults = 
+		-- 	  {
+		-- 		  file_icons = false,
+		-- 		  color_icons = false,
+		-- 		  multiprocess = false,
+		-- 	  },
+		-- 	  actions = {
+		-- 		  files = {
+		-- 			  true,
+		-- 			  ["enter"] = fzf_use_existing_buffer
+		-- 		  },
+		-- 		  buffers = {
+		-- 			  ["enter"] = fzf_use_existing_buffer
+		-- 		  },
+		-- 		  grep = {
+		-- 			  ["enter"] = fzf_use_existing_buffer
+		-- 		  },
+		-- 	  },
+		--    },
+		-- },
 
-		  opts = {
-			  defaults = 
-			  {
-				  file_icons = false,
-				  color_icons = false,
-				  multiprocess = false,
-			  },
-			  actions = {
-				  files = {
-					  true,
-					  ["enter"] = fzf_use_existing_buffer
-				  },
-				  buffers = {
-					  ["enter"] = fzf_use_existing_buffer
-				  },
-				  grep = {
-					  ["enter"] = fzf_use_existing_buffer
-				  },
-			   },
-		   },
+		{
+			"nvim-mini/mini.nvim", 
+			version = false,
 		},
 
 		{
@@ -422,13 +436,49 @@ end
 noremap_bind('s', justhop)
 
 -- fzf-lua
-noremap_bind('<Leader>fx', [[:lua require("fzf-lua").builtin()<CR>]])
-noremap_bind('<Leader>fp', [[:lua require("fzf-lua").files()<CR>]])
-noremap_bind('<Leader>fb', [[:lua require("fzf-lua").buffers()<CR>]])
-noremap_bind('<Leader>fa', [[:lua require("fzf-lua").grep()<CR>]])
-noremap_bind('<Leader>ft', [[:lua require("fzf-lua").treesitter()<CR>]])
-noremap_bind('<Leader>ff', [=[:lua require("fzf-lua").treesitter()<CR>[function] ]=])
-noremap_bind('<Leader>fs', [=[:lua require("fzf-lua").treesitter()<CR>[type] ]=])
+-- noremap_bind('<Leader>fx', [[:lua require("fzf-lua").builtin()<CR>]])
+-- noremap_bind('<Leader>fp', [[:lua require("fzf-lua").files()<CR>]])
+-- noremap_bind('<Leader>fb', [[:lua require("fzf-lua").buffers()<CR>]])
+-- noremap_bind('<Leader>fa', [[:lua require("fzf-lua").grep()<CR>]])
+-- noremap_bind('<Leader>ft', [[:lua require("fzf-lua").treesitter()<CR>]])
+-- noremap_bind('<Leader>ff', [=[:lua require("fzf-lua").treesitter()<CR>[function] ]=])
+-- noremap_bind('<Leader>fs', [=[:lua require("fzf-lua").treesitter()<CR>[type] ]=])
+-- require('fzf-lua').setup({ { "max-perf", "border-fused" } })
+
+-- mini.pick / mini.extra
+local mpick = require("mini.pick")
+
+local win_config = function()
+	local height = math.floor(0.618 * vim.o.lines)
+	-- local width = math.floor(0.618 * vim.o.columns)
+	local width = 80
+	return {
+	  anchor = 'NW', height = height, width = width,
+	  row = math.floor(0.5 * (vim.o.lines - height)),
+	  col = math.floor(0.5 * (vim.o.columns - width)),
+	}
+end
+
+mpick.setup(
+	{ 
+		-- Disable icons in the file picker
+		source = { show = mpick.default_show },
+		delay = { busy = 16 },
+		window = { config = win_config },
+		options = { use_cache = true },
+	}
+)
+
+require("mini.extra").setup({ })
+
+local function grep_live(opts)
+	local dir = vim.fn.expand("%:p:h")
+	vim.print(dir)
+	MiniPick.builtin.grep_live({}, { source = { cwd = dir } })
+end
+vim.keymap.set("n", "<Leader>fp", MiniPick.builtin.files, { remap = false })
+vim.keymap.set("n", "<Leader>fb", MiniPick.builtin.buffers, { remap = false })
+vim.keymap.set("n", "<Leader>fa", grep_live, { remap = false })
 
 -- substitute
 vim.keymap.set("x", "<C-p>", require("substitute").visual, { remap = false })
@@ -437,4 +487,4 @@ vim.keymap.set("x", "<C-s>", require("substitute.exchange").visual, { remap = fa
 -- glaregun
 vim.keymap.set("n", "<C-l>", ":lua require('degauss_loader').try_load()<CR>", { remap = false })
 vim.keymap.set("n", "<Leader><C-l>", ":lua require('degauss_loader').shutdown()<CR>", { remap = false })
-vim.cmd("hi NormalFloat guibg=#ff4400")
+-- vim.cmd("hi NormalFloat guibg=#ff4400")
