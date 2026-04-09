@@ -1,0 +1,16 @@
+theme = "modbell"
+
+[editor]
+cursorline = true
+gutters = ["diagnostics"]
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
+
+[keys.normal]
+"space" = { "ret" = "goto_word"}
+
+[keys.insert]
+k = { j = { "space" = "normal_mode"}}
