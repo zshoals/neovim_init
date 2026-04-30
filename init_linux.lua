@@ -291,3 +291,18 @@ if (vim.uv.fs_stat("nvim_project.lua") ~= nil) then
 	vim.cmd("echo('Found nvim_project.lua; loaded nvim_project extensions.')")
 end
 
+-- Note(ZPC): LSP configurations
+vim.lsp.config['odin'] = {
+	cmd = { 'ols' },
+	filetypes = { 'odin' },
+	root_markers = { '.git' },
+}
+vim.lsp.enable('odin')
+
+vim.diagnostic.config({
+	virtual_text = false,
+	signs = false,
+	underline = false,
+	virtual_lines = false,
+	virtual_text = false,
+})
