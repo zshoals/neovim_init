@@ -32,9 +32,11 @@ vim.opt.path:append(',')
 
 -- Theme and Font
 vim.cmd.colorscheme("fogbell_lite")
+vim.opt.termguicolors = true
 -- vim.opt.guifont = { 'Iosevka SS06:h12' }
--- vim.opt.guicursor = { 'n-v-c-sm:block-Cursor/Cursor,i-ci-ve:ver25-Cursor/Cursor,r-cr-o:hor20-Cursor/Cursor' }
--- vim.cmd.highlight( { "Cursor", "guifg=White", "guibg=Red" } )
+vim.opt.guicursor = { 'n-v-c-sm:block-Cursor/Cursor,i-ci-ve:ver25-Cursor/Cursor,r-cr-o:hor20-Cursor/Cursor' }
+vim.cmd.highlight( { "Cursor", "guifg=White", "guibg=Red" } )
+vim.opt.guicursor:remove { 't:block-blinkon500-blinkoff500-TermCursor' }
 
 -- Editor preferences
 vim.opt.cursorline = true
@@ -116,11 +118,17 @@ function vis_noremap_bind(lhs, rhs)
 	vim.keymap.set('v', lhs, rhs, { remap = false } )
 end
 
+function vis_bind(lhs, rhs)
+	vim.keymap.set('v', lhs, rhs, { remap = true } )
+end
+
 
 -- Exit insert mode
 ins_noremap_bind('kj<Leader>', '<Escape>')
 ins_noremap_bind('KJ<Leader>', '<Escape>')
 
+-- Copy to clipboard
+vis_noremap_bind('<Leader><Leader><Leader>y', '"+y')
 -- Paste from clipboard
 noremap_bind('<Leader><Leader><Leader>p', '"+P')
 
@@ -129,7 +137,7 @@ noremap_bind('0', '_')
 noremap_bind('_', '0')
 
 --Clear highlighting
-noremap_bind('<Leader><Enter>', ':noh<Enter>:<Backspace><Esc>')
+noremap_bind('<Leader><Leader><Enter>', ':noh<Enter>:<Backspace><Esc>')
 
 -- Cycle the quickfix and location lists
 noremap_bind('<Leader>[', ':lprev<Enter>zz')
@@ -205,7 +213,7 @@ vim.keymap.set('c', '<CR>', function() return vim.fn.getcmdtype() == '/' and '<C
 
 -- Fast grep
 -- Invalidated by fzf-lua? Experiment without it for awhile
-noremap_bind('<Leader>f', ':silent lgrep ')
+-- noremap_bind('<Leader>f', ':silent lgrep ')
 
 -- Open and reload source files
 function open_config_file()
@@ -223,14 +231,63 @@ noremap_bind('<Leader>s', '/["\'{}()<>]/<Enter>')
 
 
 -- Note(ZPC): Plugins
+-- Using without configuration:
+--       Surround
+--       Commentary
+--       Niceblock
 
 -- Note(ZPC): Hop Configuration
-
 local hop = require('hop')
 hop.setup({})
-noremap_bind('s', function() hop.hint_words({ multi_windows = true}) end)
+noremap_bind('<Leader><Enter>', function() hop.hint_words({ multi_windows = true}) end)
+vis_noremap_bind('<Leader><Enter>', function() hop.hint_words({ multi_windows = true}) end)
 
-if (vim.uv.fs_stat("project.lua") ~= nil) then
-	vim.cmd("luafile project.lua")
-	vim.cmd("echo('Found project.lua; loaded project extensions.')")
+-- Note(ZPC): fzf-lua Configuration
+local fzf = require('fzf-lua')
+
+function fzf_use_existing_buffer(sel, opts)
+	if not require("fzf-lua").actions.file_switch({ sel[1] }, opts) then require("fzf-lua").actions.file_edit({ sel[1] }, opts) end
 end
+
+fzf.setup({
+	defaults = {
+		file_icons = false,
+		color_icons = false,
+	},
+	actions = {
+		files = {
+			true,
+			["enter"] = fzf_use_existing_buffer
+		},
+		buffers = {
+			["enter"] = fzf_use_existing_buffer
+		},
+		grep = {
+			["enter"] = fzf_use_existing_buffer
+		},
+	},
+	fzf_colors = { false }
+})
+
+noremap_bind('<Leader>fx', [[:lua require("fzf-lua").builtin()<CR>]])
+noremap_bind('<Leader>fp', [[:lua require("fzf-lua").files()<CR>]])
+noremap_bind('<Leader>fb', [[:lua require("fzf-lua").buffers()<CR>]])
+noremap_bind('<Leader>fa', [[:lua require("fzf-lua").grep()<CR>]])
+
+-- Note(ZPC): Mini Configuration
+-- Mini.operators for text swap (gx)
+require('mini.operators').setup({})
+vis_bind('<Leader>s', 'gx')
+
+require('mini.splitjoin').setup({})
+require('mini.align').setup({})
+vis_bind('ga', 'gA')
+
+
+-- Source a local nvim_project.lua that provides build commands and anything needed by
+-- the specific project, like errorformats
+if (vim.uv.fs_stat("nvim_project.lua") ~= nil) then
+	vim.cmd("luafile nvim_project.lua")
+	vim.cmd("echo('Found nvim_project.lua; loaded nvim_project extensions.')")
+end
+
