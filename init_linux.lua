@@ -93,7 +93,7 @@ function block_path_modifications(path)
 	})
 end
 
-block_path_modifications("/home/zpc/containers/devbox/Odin/core")
+block_path_modifications("/home/zpc/containers/devbox/Odin/core/*")
 
 -- Disable indenting inside extern C blocks
 vim.opt.cinoptions = { "E-s" }
@@ -276,7 +276,16 @@ noremap_bind('<Leader>fa', [[:lua require("fzf-lua").grep()<CR>]])
 
 -- Note(ZPC): Mini Configuration
 -- Mini.operators for text swap (gx)
-require('mini.operators').setup({})
+require('mini.operators').setup({
+	-- Clear these prefixes as they conflict with Neovim LSP defaults
+	-- and we are not using these operators anyway at present
+	sort = {
+		prefix = '',
+	},
+	replace = {
+		prefix = '',
+	},
+})
 vis_bind('<Leader>s', 'gx')
 
 require('mini.splitjoin').setup({})
@@ -284,12 +293,7 @@ require('mini.align').setup({})
 vis_bind('ga', 'gA')
 
 
--- Source a local nvim_project.lua that provides build commands and anything needed by
--- the specific project, like errorformats
-if (vim.uv.fs_stat("nvim_project.lua") ~= nil) then
-	vim.cmd("luafile nvim_project.lua")
-	vim.cmd("echo('Found nvim_project.lua; loaded nvim_project extensions.')")
-end
+
 
 -- Note(ZPC): LSP configurations
 vim.lsp.config['odin'] = {
@@ -306,3 +310,14 @@ vim.diagnostic.config({
 	virtual_lines = false,
 	virtual_text = false,
 })
+
+
+
+
+-- Source a local nvim_project.lua that provides build commands and anything needed by
+-- the specific project, like errorformats
+if (vim.uv.fs_stat("nvim_project.lua") ~= nil) then
+	vim.cmd("luafile nvim_project.lua")
+	vim.cmd("echo('Found nvim_project.lua; loaded nvim_project extensions.')")
+end
+
